@@ -2,6 +2,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
+  Linking,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -14,17 +15,17 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
+import { useState } from "react";
+import { BlurView } from "expo-blur";
+import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, textColor, textColorAlt } from "../styles/main";
+import { OpenChat } from "../constants";
+import { useNavigation } from "@react-navigation/native";
 
-export const textColor = "rgb(240,241,242)";
-export const textColorAlt = "rgb(200,200,200)";
-export const accentColor1 = "rgb(37,47,61)";
-export const accentColor2 = "rgb(26,37,48)";
-export const accentColor3 = "rgb(53,67,84)";
-export const accentColor4 = "rgb(182,190,196)";
-export const accentColor5 = "rgb(144,104,213)";
-export const accentColor6 = "rgb(199,190,227)";
 
 export default function Home() {
+  const [category, setcategory] = useState(dumCategories[0]);
+  const navigation = useNavigation()
+
   return (
     <LinearGradient
       style={{ flex: 1 }}
@@ -33,11 +34,9 @@ export default function Home() {
       colors={[accentColor1, accentColor2]}
     >
       <SafeAreaView>
-        <ScrollView style={{paddingBottom:100}}>
+        <ScrollView style={{ paddingBottom: 100 }}>
           <View style={styles.headerContainer}>
-            <TouchableOpacity>
-              <Ionicons name="menu-outline" size={30} color={textColor} />
-            </TouchableOpacity>
+            <Image source={require("../assets/biz.jpeg")} style={{ height: 35, width: 35, borderRadius: 50, }} />
             <TouchableOpacity>
               <Ionicons name="notifications" size={30} color={textColor} />
             </TouchableOpacity>
@@ -56,28 +55,29 @@ export default function Home() {
             showsHorizontalScrollIndicator={false}
             style={{ paddingVertical: 25, paddingLeft: 10 }}
           >
-            {dumCategories.map((fest, index) => (
+            {dumCategories.map((cat, index) => (
               <TouchableOpacity
+                onPress={() => setcategory(cat)}
                 key={index}
                 style={[
                   {
-                    backgroundColor: index == 0 ? accentColor5 : accentColor3,
-                    shadowColor: index == 0 ? accentColor5 : "transparent",
+                    backgroundColor: cat == category ? accentColor5 : accentColor3,
+                    shadowColor: cat == category ? accentColor5 : "transparent",
                   },
                   styles.categoryItem,
                 ]}
               >
-                <Text style={{ color: textColor, fontSize: 20 }}>
-                  {fest} festival
-                </Text>
+                <Text style={{ color: textColor, fontSize: 20 }}>{cat}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
           <View style={styles.titleHeader}>
             <Text style={{ fontSize: 35, color: textColor }}>
-              Musical festivals
+              Campus {category}
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              navigation.navigate("BusinessList")
+            }}>
               <Text style={{ color: accentColor4, fontSize: 20 }}>See all</Text>
             </TouchableOpacity>
           </View>
@@ -93,7 +93,7 @@ export default function Home() {
                   weight="heavy"
                   key={i}
                   style={{
-                    paddingHorizontal: 20,
+                    paddingHorizontal: 15,
                     width: Dimensions.get("window").width,
                   }}
                 >
@@ -101,8 +101,27 @@ export default function Home() {
                     style={styles.eventImage}
                     borderRadius={25}
                     resizeMode="cover"
-                    source={require("../assets/poster.jpeg")}
+                    source={require("../assets/biz2.avif")}
                   >
+                    <View style={styles.eventInfoContainer}>
+                      <BlurView
+                        style={styles.eventInfo}
+                        intensity={Platform.OS == "ios" && 50}
+                        tint="light"
+                      >
+                        <View style={{ flexDirection: "column", padding: 10 }}>
+                          <Text style={styles.eventName}>
+                            3X Wear Sneakers
+                          </Text>
+                          <Text style={styles.bizNumber}>
+                            0712345678
+                          </Text>
+                        </View>
+                        <TouchableOpacity onPress={() => OpenChat("254113359777")} style={styles.chatButton}>
+                          <Ionicons name="chatbox" size={24} color={accentColor5} />
+                        </TouchableOpacity>
+                      </BlurView>
+                    </View>
                     <TouchableOpacity>
                       <Ionicons
                         style={styles.eventLikeIcon}
@@ -121,7 +140,15 @@ export default function Home() {
   );
 }
 
-const dumCategories = ["Musical", "Book", "Dance"];
+export const dumCategories = [
+  "Shops",
+  "Services",
+  "Events",
+  "Jobs",
+  "News",
+  "Housing",
+  "Tutors",
+];
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -138,7 +165,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 15,
   },
   searchInput: {
     color: textColor,
@@ -174,5 +201,41 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     padding: 12,
     backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  eventInfoContainer: {
+    bottom: 0,
+    position: "absolute",
+    width: "100%",
+    backgroundColor: Platform.OS == "android" && "rgba(0,0,0,0.9)",
+    borderRadius: 25,
+    borderTopRightRadius: 0,
+    overflow: "hidden",
+    borderTopLeftRadius: 0,
+  },
+  eventInfo: {
+    flexDirection: "row",
+    padding: 10,
+    alignItems: "center",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  eventName: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  bizNumber: {
+    color: "white",
+    fontSize: 17,
+    marginTop: 5,
+    fontWeight: "600",
+  },
+  chatButton: {
+    padding: 15,
+    backgroundColor: "white",
+    borderRadius: 30,
+    fontSize: 20,
+    fontWeight: "600",
+    overflow: "hidden",
   },
 });
