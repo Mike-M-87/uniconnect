@@ -14,6 +14,9 @@ import BusinessList from "./screens/bizlist";
 import { accentColor3, accentColor4 } from "./styles/main";
 import MyBusinessList from "./screens/mybiz";
 import LikedBusiness from "./screens/likes";
+import NewBusiness from "./screens/newbiz";
+import EditBusiness from "./screens/editbiz";
+import Login from "./screens/login";
 
 
 const Tab = createBottomTabNavigator();
@@ -24,8 +27,11 @@ export default function App() {
     <>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="MainScreen">
+          <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="MainScreen" component={MainScreen} />
           <Stack.Screen name="BusinessList" component={BusinessList} />
+          <Stack.Screen name="NewBusiness" component={NewBusiness} />
+          <Stack.Screen name="EditBusiness" component={EditBusiness} />
           <Stack.Screen name="BusinessDetails" component={BusinessInfo} />
         </Stack.Navigator>
         <StatusBar style="light" />
@@ -37,7 +43,7 @@ export default function App() {
 function MainScreen() {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Account"
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
@@ -65,7 +71,7 @@ function MainScreen() {
         component={Home}
       />
       <Tab.Screen
-        name="BusinessInfo"
+        name="MyBusinessList"
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons

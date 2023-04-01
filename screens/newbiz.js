@@ -34,7 +34,7 @@ const data = [
   { key: 'India', value: 'India' },
   { key: 'NewZealand', value: 'NewZealand' },
 ]
-export default function Login() {
+export default function NewBusiness() {
   const [selected, setSelected] = useState("");
   const [categories, setCategories] = useState([]);
   const [image, setImage] = useState();
@@ -64,8 +64,8 @@ export default function Login() {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
       >
-        <ScrollView
-          showsVerticalScrollIndicator={false}>
+        <ScrollView 
+        showsVerticalScrollIndicator={false}>
           {image ?
             <>
               <Image

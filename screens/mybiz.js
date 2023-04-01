@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons, EvilIcons, Octicons } from "@expo/vector-icons";
+import { Ionicons, EvilIcons, Octicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
 import { useState } from "react";
@@ -20,46 +20,63 @@ import { BlurView } from "expo-blur";
 import { dumCategories } from "./home";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColorAlt } from "../styles/main";
 import { useNavigation } from "@react-navigation/native";
+import { Header } from "../components/header";
 
 
 
-export default function MyBusinessList() {
+export default function LikedBusiness() {
   const navigation = useNavigation()
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: accentColor7 }}>
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color={accentColor4} />
-        <TextInput
-          placeholder="Search"
-          placeholderTextColor={accentColor4}
-          style={styles.searchInput}
-        />
-      </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ marginBottom: 0 }}>
-        {Array(20).fill(null).map((_, i) =>
+    <LinearGradient
+      style={{ flex: 1 }}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      colors={[accentColor1, accentColor2]}
+    >
+      <SafeAreaView>
+        <Header />
+        <Text style={{ fontSize: 25, fontWeight: "bold", color: textColor, marginLeft: 20 }}>
+          Your Shops
+        </Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginHorizontal: 10 }}>
+          <Text style={{ fontSize: 20, color: textColor, padding: 10 }}>
+            5 Businesses
+          </Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate("BusinessDetails")}
-            key={i}
-            style={styles.eventInfo}
-          >
-            <Image source={require("../assets/biz.jpeg")} style={{ height: 50, width: 50, }} />
-            <View style={{ flexDirection: "column", padding: 10 }}>
-              <Text style={styles.eventName}>
-                3X Wear Sneakers
-              </Text>
-              <Text numberOfLines={2} style={styles.bizDescription}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum exercitationem veritatis sapiente nulla quas minima eligendi animi sint ipsam non repellat ipsum dolore voluptatibus, maiores deleniti. Eum explicabo libero quam?
-              </Text>
-            </View>
-            <EvilIcons name="chevron-right" size={24} color="white" />
+            onPress={() => navigation.navigate("NewBusiness")}
+            style={{
+              padding: 10,
+              backgroundColor: accentColor5,
+              borderRadius: 25
+            }}>
+            <MaterialIcons name="add-business" size={24} color={textColor} />
           </TouchableOpacity>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+        </View>
+
+        <ScrollView
+          style={{ marginBottom: 210, paddingTop: 10 }}
+        >
+          {Array(20).fill(null).map((_, i) =>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("EditBusiness")}
+              key={i}
+              style={styles.eventInfo}>
+              <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
+              <View style={{ flexDirection: "column", padding: 10 }}>
+                <Text style={styles.eventName}>
+                  3X Wear Sneakers
+                </Text>
+                <Text numberOfLines={2} style={styles.bizDescription}>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum exercitationem veritatis sapiente nulla quas minima eligendi animi sint ipsam non repellat ipsum dolore voluptatibus, maiores deleniti. Eum explicabo libero quam?
+                </Text>
+              </View>
+              <EvilIcons name="chevron-right" size={24} color="white" />
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   )
 }
 
@@ -105,10 +122,7 @@ const styles = StyleSheet.create({
   eventInfo: {
     flexDirection: "row",
     padding: 10,
-    borderBottomColor: "gray",
-    borderBottomWidth: 0.2,
-    borderTopColor: "gray",
-    borderTopWidth: 0.2,
+    marginHorizontal:10,
     alignItems: "center",
     alignItems: "center",
     justifyContent: "space-between",

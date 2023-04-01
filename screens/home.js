@@ -20,6 +20,7 @@ import { BlurView } from "expo-blur";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, textColor, textColorAlt } from "../styles/main";
 import { OpenChat } from "../constants";
 import { useNavigation } from "@react-navigation/native";
+import { Header } from "../components/header";
 
 
 export default function Home() {
@@ -35,12 +36,7 @@ export default function Home() {
     >
       <SafeAreaView>
         <ScrollView style={{ paddingBottom: 100 }}>
-          <View style={styles.headerContainer}>
-            <Image source={require("../assets/biz.jpeg")} style={{ height: 35, width: 35, borderRadius: 50, }} />
-            <TouchableOpacity>
-              <Ionicons name="notifications" size={30} color={textColor} />
-            </TouchableOpacity>
-          </View>
+          <Header />
           <View style={styles.searchContainer}>
             <Ionicons name="search" size={24} color={accentColor4} />
             <TextInput
@@ -73,12 +69,12 @@ export default function Home() {
           </ScrollView>
           <View style={styles.titleHeader}>
             <Text style={{ fontSize: 35, color: textColor }}>
-              Campus {category}
+              {category} Category
             </Text>
             <TouchableOpacity onPress={() => {
               navigation.navigate("BusinessList")
             }}>
-              <Text style={{ color: accentColor4, fontSize: 20 }}>See all</Text>
+              <Text style={{ color: accentColor5, fontSize: 20 }}>See all</Text>
             </TouchableOpacity>
           </View>
           <ScrollView
@@ -118,7 +114,7 @@ export default function Home() {
                           </Text>
                         </View>
                         <TouchableOpacity onPress={() => OpenChat("254113359777")} style={styles.chatButton}>
-                          <Ionicons name="chatbox" size={24} color={accentColor5} />
+                          <Ionicons name="chatbox" size={24} color="white" />
                         </TouchableOpacity>
                       </BlurView>
                     </View>
@@ -151,21 +147,14 @@ export const dumCategories = [
 ];
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginHorizontal: 20,
-  },
   searchContainer: {
     backgroundColor: accentColor3,
     padding: 20,
     borderRadius: 25,
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 20,
-    marginHorizontal: 15,
+    marginTop: 10,
+    marginHorizontal: 20,
   },
   searchInput: {
     color: textColor,
@@ -184,7 +173,8 @@ const styles = StyleSheet.create({
   },
   titleHeader: {
     flexDirection: "row",
-    margin: 20,
+    marginHorizontal: 20,
+    marginBottom: 10,
     alignItems: "baseline",
     justifyContent: "space-between",
   },
@@ -232,7 +222,7 @@ const styles = StyleSheet.create({
   },
   chatButton: {
     padding: 15,
-    backgroundColor: "white",
+    backgroundColor: accentColor5,
     borderRadius: 30,
     fontSize: 20,
     fontWeight: "600",

@@ -27,7 +27,7 @@ export default function BusinessList() {
   const navigation = useNavigation()
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: accentColor7 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: accentColor8 }}>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={24} color={accentColor4} />
         <TextInput
@@ -46,7 +46,7 @@ export default function BusinessList() {
             key={i}
             style={styles.eventInfo}
           >
-            <Image source={require("../assets/biz.jpeg")} style={{ height: 50, width: 50, }} />
+            <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
             <View style={{ flexDirection: "column", padding: 10 }}>
               <Text style={styles.eventName}>
                 3X Wear Sneakers
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   searchContainer: {
-    backgroundColor: accentColor8,
+    backgroundColor: accentColor3,
     padding: 20,
     flexDirection: "row",
     alignItems: "center",
@@ -105,10 +105,8 @@ const styles = StyleSheet.create({
   eventInfo: {
     flexDirection: "row",
     padding: 10,
-    borderBottomColor: "gray",
+    borderBottomColor: accentColor3,
     borderBottomWidth: 0.2,
-    borderTopColor: "gray",
-    borderTopWidth: 0.2,
     alignItems: "center",
     alignItems: "center",
     justifyContent: "space-between",
