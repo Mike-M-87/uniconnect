@@ -19,7 +19,6 @@ import { HapticButton } from "../components/haptic";
 import { useState } from "react";
 import { BlurView } from "expo-blur";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
-import { OpenChat } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import { dumCategories } from "./home";
 import { SelectList } from 'react-native-dropdown-select-list'
@@ -65,7 +64,7 @@ export default function EditBusiness() {
       colors={[accentColor1, accentColor2]}
     >
       <SafeAreaView>
-        <Header title="Edit Your Business" />
+        <Header title="Business Name" />
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
@@ -90,14 +89,14 @@ export default function EditBusiness() {
               </View>
             }
 
-            <View style={{ marginHorizontal: 10, paddingBottom: 150, marginTop: 15, }}>
+            <View style={{ marginHorizontal: 10, paddingBottom: 130, marginTop: 15, }}>
               <TouchableOpacity onPress={() => PickImage()} style={{ padding: 10, backgroundColor: accentColor5, borderRadius: 25 }}>
                 <Text style={{ color: "white", textAlign: "center", fontSize: 18 }}>
                   Select a new Image or logo for your business
                 </Text>
               </TouchableOpacity>
 
-              <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Choose the Type of Business</Text>
+              <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Edit the Type of Business</Text>
               <SelectList
                 boxStyles={{ backgroundColor: accentColor3, borderWidth: 0, paddingVertical: 15 }}
                 inputStyles={{ color: textColor2, fontSize: 20, marginLeft: 10 }}
@@ -110,19 +109,21 @@ export default function EditBusiness() {
                 setSelected={setSelected} data={dumCategories}
               />
               <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Business Name</Text>
-              <TextInput placeholder="Name of your business" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+              <TextInput placeholder="Enter a new name of your business" placeholderTextColor={textColor2} style={styles.detailsContainer} />
               <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Description</Text>
-              <TextInput placeholder="Business description" placeholderTextColor={textColor2} numberOfLines={4} style={styles.detailsContainer} />
+              <TextInput placeholder="Enter the business description" placeholderTextColor={textColor2} numberOfLines={4} style={styles.detailsContainer} />
 
               <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Location</Text>
-              <TextInput placeholder="Where the business is located" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+              <TextInput placeholder="Edit the business location" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+
+              <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Website (optional)</Text>
+              <TextInput placeholder="Website for your business (Optional)" placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
               <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>WhatsApp Business Contact</Text>
-              <TextInput keyboardType="phone-pad" placeholder="254xxxxxxxx" placeholderTextColor={textColor2} style={styles.detailsContainer} />
-
+              <TextInput keyboardType="phone-pad" placeholder="Enter the Whats App business number" placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
               <TouchableOpacity style={styles.createButton}>
-                <Text style={styles.createButtonText}>Create Business</Text>
+                <Text style={styles.createButtonText}>Update</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

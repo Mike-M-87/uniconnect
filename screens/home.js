@@ -18,7 +18,7 @@ import { HapticButton } from "../components/haptic";
 import { useState } from "react";
 import { BlurView } from "expo-blur";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, textColor, textColorAlt } from "../styles/main";
-import { OpenChat } from "../constants";
+import { OpenChat, OpenLink } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/header";
 
@@ -113,7 +113,7 @@ export default function Home() {
                             0712345678
                           </Text>
                         </View>
-                        <TouchableOpacity onPress={() => OpenChat("254113359777")} style={styles.chatButton}>
+                        <TouchableOpacity onPress={() => OpenLink("https://wa.me/254113359777")} style={styles.chatButton}>
                           <Ionicons name="chatbox" size={24} color="white" />
                         </TouchableOpacity>
                       </BlurView>

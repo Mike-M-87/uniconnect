@@ -12,13 +12,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons, EvilIcons, Octicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, EvilIcons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
 import { useState } from "react";
 import { BlurView } from "expo-blur";
 import { dumCategories } from "./home";
-import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColorAlt } from "../styles/main";
+import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColorAlt } from "../styles/main";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/header";
 
@@ -55,7 +55,8 @@ export default function LikedBusiness() {
         </View>
 
         <ScrollView
-          style={{ marginBottom: 210, paddingTop: 10 }}
+        indicatorStyle="white"
+          style={{ marginBottom: 210, paddingTop: 20 }}
         >
           {Array(20).fill(null).map((_, i) =>
             <TouchableOpacity
@@ -71,7 +72,7 @@ export default function LikedBusiness() {
                   Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum exercitationem veritatis sapiente nulla quas minima eligendi animi sint ipsam non repellat ipsum dolore voluptatibus, maiores deleniti. Eum explicabo libero quam?
                 </Text>
               </View>
-              <EvilIcons name="chevron-right" size={24} color="white" />
+              <MaterialCommunityIcons name="store-edit" size={24} color={textColorAlt} />
             </TouchableOpacity>
           )}
         </ScrollView>
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   eventInfo: {
     flexDirection: "row",
     padding: 10,
-    marginHorizontal:10,
+    marginHorizontal: 10,
     alignItems: "center",
     alignItems: "center",
     justifyContent: "space-between",

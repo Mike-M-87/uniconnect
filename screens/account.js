@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   ImageBackground,
@@ -7,25 +8,32 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons, AntDesign, EvilIcons } from "@expo/vector-icons";
+import { Ionicons, AntDesign, EvilIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BlurView } from "expo-blur";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
-import { OpenChat } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 
 
 export default function Account() {
   const [image, setImage] = useState();
+  const [editName, seteditName] = useState(false)
+  const navigation = useNavigation()
+  const [hasBiometric, sethasBiometric] = useState(false)
+  const [bioSwitch, setBioSwitch] = useState(false)
+
+  const userNameRef = useRef()
 
   async function PickImage() {
     try {
@@ -42,6 +50,37 @@ export default function Account() {
     }
   }
 
+
+  useEffect(() => {
+    async function CheckBiometric() {
+      try {
+        sethasBiometric(await LocalAuthentication.hasHardwareAsync() && await LocalAuthentication.isEnrolledAsync())
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    CheckBiometric()
+  }, [])
+
+  useEffect(() => {
+    if (bioSwitch)
+      CheckAuth()
+  }, [bioSwitch])
+
+
+  async function CheckAuth() {
+    if (hasBiometric) {
+      const auth = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'Authenticate UniConnect User 🔒',
+      })
+      if (auth.success) {
+        Alert.alert("Successfully Authenticated")
+      } else {
+        Alert.alert("Please use password to login")
+      }
+    }
+  }
+
   return (
     <LinearGradient
       style={{ flex: 1 }}
@@ -50,7 +89,7 @@ export default function Account() {
       colors={[accentColor1, accentColor2]}
     >
       <SafeAreaView>
-        <ScrollView showsVerticalScrollIndicator={false} style={{ paddingBottom: 100, paddingTop: 30 }}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 30 }}>
           <View style={{ padding: 10 }}>
             <View style={{ flexDirection: "column", gap: 20, alignItems: "center", marginBottom: 20 }}>
               <Image source={{ uri: image }} style={{ height: 100, width: 100, borderRadius: 50, borderColor: accentColor3, borderWidth: 0.2 }} />
@@ -61,56 +100,84 @@ export default function Account() {
               </TouchableOpacity>
             </View>
 
-            <View
-              style={styles.detailsContainer}>
-              <Text style={{ color: textColor2 }}>Name</Text>
-              <Text style={styles.details}>Mikey</Text>
-            </View>
-            <View
-              style={styles.detailsContainer}>
-              <Text style={{ color: textColor2 }}>Username</Text>
-              <Text style={styles.details}>@mikey</Text>
-            </View>
 
             <View
               style={styles.detailsContainer}>
-              <Text style={{ color: textColor2 }}>Phone Number</Text>
-              <Text style={styles.details}>25412345678</Text>
+              <View>
+                <Text style={{ color: textColor2 }}>Account Name</Text>
+                <Text style={styles.details}>John Wafula</Text>
+              </View>
             </View>
 
-            <View
-              style={styles.detailsContainer}>
-              <Text style={{ color: textColor2 }}>Email</Text>
-              <Text style={styles.details}>mikey1234@gmail.com</Text>
+            <View style={styles.detailsContainer}>
+              <View style={{ flexDirection: "column" }}>
+                <Text style={{ color: textColor2 }}>Username</Text>
+                <TextInput numberOfLines={1} ref={userNameRef} editable={editName} style={styles.details}>@mikey</TextInput>
+              </View>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (editName) {
+                    seteditName(false)
+                    // Alert.alert("Saved username")
+                  }
+                  seteditName(true);
+                  userNameRef.current.focus()
+                }
+                }
+                style={{ backgroundColor: accentColor5, padding: 5, borderRadius: 5 }}>
+                {editName ? <Ionicons name="md-checkmark-circle" size={20} color={textColor} /> : <AntDesign name="edit" size={17} color={textColor} />}
+              </TouchableOpacity>
+            </View>
+
+
+            <View style={styles.detailsContainer}>
+              <View>
+                <Text style={{ color: textColor2 }}>Email</Text>
+                <Text style={styles.details}>mikey1234@gmail.com</Text>
+              </View>
             </View>
           </View>
 
           <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Preferences</Text>
 
           <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10 }}>
-            <TouchableOpacity style={styles.accountOption}>
+            <TouchableOpacity onPress={() => navigation.navigate("Change Password")} style={styles.accountOption}>
+              <MaterialCommunityIcons name="form-textbox-password" size={24} color={textColor3} />
               <Text style={styles.optionText}>
                 Change Password
               </Text>
-              <EvilIcons name="chevron-right" size={24} color={textColor3} />
+              <EvilIcons name="chevron-right" size={24} style={{ marginLeft: "auto" }} color={textColor3} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.accountOption}>
+
+            <TouchableOpacity  onPress={() => navigation.navigate("Verify Email")} style={styles.accountOption}>
+              <Ionicons name="mail-outline" size={24} color={textColor3} />
               <Text style={styles.optionText}>
-                Change Username
+                Email Verified
               </Text>
-              <EvilIcons name="chevron-right" size={24} color={textColor3} />
+              <Ionicons name="checkmark-circle" size={24} style={{ marginLeft: "auto" }} color={textColor3} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.accountOption, { borderBottomWidth: 0 }]}>
-              <Text style={styles.optionText}>
-                Change Phone Number
-              </Text>
-              <EvilIcons name="chevron-right" size={24} color={textColor3} />
-            </TouchableOpacity>
+
+            {hasBiometric &&
+              <View style={[styles.accountOption, { borderBottomWidth: 0 }]}>
+                <Ionicons name="finger-print" size={24} color={textColor3} />
+                <Text style={styles.optionText}>
+                  Biometric Authentication
+                </Text>
+                <Switch
+                  trackColor={{ false: accentColor3, true: accentColor5 }}
+                  ios_backgroundColor={accentColor3}
+                  onValueChange={() => setBioSwitch(!bioSwitch)}
+                  value={bioSwitch}
+                  style={{ marginLeft: "auto", }}
+                />
+              </View>
+            }
           </View>
 
           <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Support</Text>
 
-          <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10 }}>
+          <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10, marginBottom: 120 }}>
             <TouchableOpacity style={styles.accountOption}>
               <View style={{ flexDirection: "column" }}>
                 <Text style={{ color: textColor2, fontSize: 18 }}>
@@ -122,14 +189,15 @@ export default function Account() {
               </View>
               <EvilIcons name="chevron-right" size={24} color={textColor3} />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Root")} style={styles.logoutButton}>
+              <AntDesign name="logout" size={20} color={textColor3} />
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.logoutButton}>
-            <AntDesign name="logout" size={20} color={textColor} />
-            <Text style={styles.logoutButtonText}>Logout</Text>
-          </TouchableOpacity>
+
         </ScrollView>
-        
+
       </SafeAreaView>
     </LinearGradient>
   );
@@ -139,11 +207,13 @@ export default function Account() {
 const styles = StyleSheet.create({
   details: {
     color: textColor,
+    flexGrow: 1,
     fontSize: 20,
   },
   detailsContainer: {
-    flexDirection: "column",
-    flexGrow: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginTop: 20,
     backgroundColor: accentColor3,
     paddingVertical: 15,
@@ -161,7 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   logoutButtonText: {
-    color: "white",
+    color: textColor3,
     fontWeight: "500",
     fontSize: 25,
   },
@@ -169,9 +239,10 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
     paddingHorizontal: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
     borderBottomColor: accentColor3,
     borderBottomWidth: 0.2,
+    gap: 10,
   },
   optionText: {
     color: textColor3,

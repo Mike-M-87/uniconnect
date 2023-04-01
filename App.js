@@ -11,12 +11,16 @@ import Account from "./screens/account";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BusinessList from "./screens/bizlist";
 
-import { accentColor3, accentColor4 } from "./styles/main";
+import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor7, textColor, textColor2, textColor3 } from "./styles/main";
 import MyBusinessList from "./screens/mybiz";
 import LikedBusiness from "./screens/likes";
 import NewBusiness from "./screens/newbiz";
 import EditBusiness from "./screens/editbiz";
 import Login from "./screens/login";
+import Signup from "./screens/signup";
+import Root from "./screens/root";
+import ChangePassword from "./screens/changepass";
+import VerifyEmail from "./screens/verifyemail";
 
 
 const Tab = createBottomTabNavigator();
@@ -26,8 +30,18 @@ export default function App() {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="MainScreen">
-          <Stack.Screen name="Login" component={Login} />
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false, headerStyle: { backgroundColor: accentColor7, },
+            headerTitleStyle: { color: textColor2 }
+          }}
+          initialRouteName="Verify Email">
+          <Stack.Screen options={{ headerShown: true }} name="Login" component={Login} />
+          <Stack.Screen options={{ headerShown: true }} name="Signup" component={Signup} />
+          <Stack.Screen options={{ headerShown: true }} name="Change Password" component={ChangePassword} />
+          <Stack.Screen options={{ headerShown: true }} name="Verify Email" component={VerifyEmail} />
+
+          <Stack.Screen name="Root" component={Root} />
           <Stack.Screen name="MainScreen" component={MainScreen} />
           <Stack.Screen name="BusinessList" component={BusinessList} />
           <Stack.Screen name="NewBusiness" component={NewBusiness} />
@@ -43,7 +57,7 @@ export default function App() {
 function MainScreen() {
   return (
     <Tab.Navigator
-      initialRouteName="Account"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,

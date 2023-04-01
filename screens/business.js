@@ -1,9 +1,6 @@
-import { LinearGradient } from "expo-linear-gradient";
 import {
-  Alert,
   Dimensions,
   Image,
-  ImageBackground,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -13,15 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 import { Ionicons } from "@expo/vector-icons";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
 import { BottomSheet } from 'react-native-btr';
-
-
-// import * as React from "react";
-import MapView from "react-native-maps";
-import { CopyToClipBoard, OpenChat } from "../constants";
+import { CopyToClipBoard, OpenLink } from "../constants";
 import { useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
 import { Header } from "../components/header";
@@ -30,11 +22,9 @@ export default function BusinessInfo() {
   const [readMore, setreadMore] = useState(false)
   const [visible, setVisible] = useState(false);
 
-
-
   return (
     <SafeAreaView style={{ backgroundColor: accentColor1 }}>
-      <Header/>
+      <Header />
       <ScrollView style={{ backgroundColor: accentColor1, paddingBottom: 50 }}>
         <Image
           source={require("../assets/biz2.avif")}
@@ -58,6 +48,12 @@ export default function BusinessInfo() {
               <Ionicons name="call-outline" size={20} color={accentColor6} />
               <Text style={styles.detailsText}>
                 254113359777
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onLongPress={() => OpenLink("https://expo.dev")} style={styles.bizDetails}>
+              <Ionicons name="ios-link" size={20} color={accentColor6} />
+              <Text style={styles.detailsText}>
+                expo.dev
               </Text>
             </TouchableOpacity>
           </View>
@@ -87,8 +83,7 @@ export default function BusinessInfo() {
               <Text style={{ color: textColor, fontSize: 18 }}>Comment</Text>
             </TouchableOpacity>
           </View>
-
-          <TouchableOpacity style={styles.buyButton} onPress={() => OpenChat("254113359777")}>
+          <TouchableOpacity style={styles.buyButton} onPress={() => OpenLink("https://wa.me/254113359777")}>
             <Text style={styles.buyButtonText}>Chat on WhatsApp</Text>
           </TouchableOpacity>
         </View>
@@ -124,7 +119,7 @@ export default function BusinessInfo() {
           </ScrollView>
           <View style={styles.textinput}>
             <TextInput
-              style={{ flexGrow: 1, maxWidth: "90%", color: textColor,paddingBottom:5,fontSize:17 }}
+              style={{ flexGrow: 1, maxWidth: "90%", color: textColor, paddingBottom: 5, fontSize: 17 }}
               multiline
               placeholder="Type Comment Here"
               placeholderTextColor={textColor2}
@@ -142,7 +137,7 @@ export default function BusinessInfo() {
 const styles = StyleSheet.create({
   title: { fontSize: 40, marginTop: 10, color: textColor },
   bizDetails: { flexDirection: "row", alignItems: "center", gap: 5 },
-  detailsContainer: { marginTop: 20, flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", gap: 5 },
+  detailsContainer: { marginTop: 20, flexDirection: "row", flexWrap: "wrap", gap: 10 },
   descTitle: {
     color: textColorAlt,
     marginTop: 25,
@@ -210,8 +205,8 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height - 200,
   },
   textinput: {
-    marginBottom:30,
-    marginTop:10,
+    marginBottom: 30,
+    marginTop: 10,
     padding: 15,
     borderRadius: 25,
     backgroundColor: accentColor3,

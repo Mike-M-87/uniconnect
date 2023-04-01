@@ -1,10 +1,7 @@
 import {
   Dimensions,
   Image,
-  ImageBackground,
   KeyboardAvoidingView,
-  Linking,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,14 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons, AntDesign, EvilIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { EvilIcons } from "@expo/vector-icons";
 import { HapticButton } from "../components/haptic";
 import { useState } from "react";
-import { BlurView } from "expo-blur";
-import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
-import { OpenChat } from "../constants";
-import { useNavigation } from "@react-navigation/native";
+import { accentColor5, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
 import { dumCategories } from "./home";
 import { SelectList } from 'react-native-dropdown-select-list'
 import * as ImagePicker from 'expo-image-picker';
@@ -36,7 +29,6 @@ const data = [
 ]
 export default function NewBusiness() {
   const [selected, setSelected] = useState("");
-  const [categories, setCategories] = useState([]);
   const [image, setImage] = useState();
 
 
@@ -64,8 +56,8 @@ export default function NewBusiness() {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
       >
-        <ScrollView 
-        showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}>
           {image ?
             <>
               <Image
@@ -111,6 +103,9 @@ export default function NewBusiness() {
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Location</Text>
             <TextInput placeholder="Where the business is located" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+
+            <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Website (optional)</Text>
+            <TextInput placeholder="Website for your business (Optional)" placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>WhatsApp Business Contact</Text>
             <TextInput keyboardType="phone-pad" placeholder="254xxxxxxxx" placeholderTextColor={textColor2} style={styles.detailsContainer} />

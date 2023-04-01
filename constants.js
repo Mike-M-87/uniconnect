@@ -1,17 +1,17 @@
 import { Alert, Linking } from "react-native";
 import * as Clipboard from 'expo-clipboard';
+export const API_URL = "http://localhost:8081/query";
 
-
-export async function OpenChat(number) {
-  const supported = Linking.canOpenURL("https://wa.me/"+number)
+export async function OpenLink(link) {
+  const supported = Linking.canOpenURL(link)
   if (supported) {
     try {
-      await Linking.openURL("https://wa.me/"+number);
+      await Linking.openURL(link);
     } catch (error) {
       console.log(error);
     }
   } else {
-    Alert.alert(`Can't Open: ${number}`);
+    Alert.alert(`Can't Open: ${link}`);
   }
 }
 

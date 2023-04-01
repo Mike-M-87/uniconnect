@@ -11,7 +11,7 @@ export function Header({title}) {
       <TouchableOpacity onPress={() => navigation.canGoBack() && navigation.goBack()}>
         <Ionicons name="ios-chevron-back" size={30} color={textColor} />
       </TouchableOpacity>
-      <Text style={{ textAlign: "center", color: textColor, fontSize: 30 }}>{title}</Text>
+      <Text numberOfLines={1} style={{ textAlign: "center", color: textColor, fontSize: 30,maxWidth:"80%" }}>{title}</Text>
       <TouchableOpacity onPress={() => navigation.navigate('MainScreen', { screen: 'Account' })}>
         <Image source={require("../assets/biz.jpeg")} style={{ height: 30, width: 30, borderRadius: 50, }} />
       </TouchableOpacity>

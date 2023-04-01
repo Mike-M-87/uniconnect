@@ -35,14 +35,12 @@ const data = [
   { key: 'India', value: 'India' },
   { key: 'NewZealand', value: 'NewZealand' },
 ]
-export default function Login() {
-  const [selected, setSelected] = useState("");
-  const [categories, setCategories] = useState([]);
+export default function ChangePassword() {
+
+  const [oldPasswordVisible, setOldPasswordVisible] = useState(true);
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(true);
-
   const navigation = useNavigation()
-
 
 
   return (
@@ -50,37 +48,53 @@ export default function Login() {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
       >
-        <ScrollView showsVerticalScrollIndicator={false} style={{ height: "100%" }}>
-          <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 30 }}>
-            <Image source={require("../assets/uniconnect-logo.png")} style={{ height: 200, width: 200 }} />
-          </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
 
           <View style={{ marginHorizontal: 10, marginTop: 15, paddingBottom: 20 }}>
 
-            <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Username/ Email Address</Text>
-            <TextInput placeholder="Enter username or email" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Old Password</Text>
+            <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0, paddingLeft: 0 }]}>
+              <TextInput
+                placeholderTextColor={textColor2}
+                style={styles.detailsContainer}
+                placeholder="Enter old password"
+                passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
+                secureTextEntry={confirmPasswordVisible}
+              />
+              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
+            </View>
 
-            <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Password</Text>
+
+            <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>New Password</Text>
             <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0, paddingLeft: 0 }]}>
               <TextInput
                 placeholderTextColor={textColor2}
                 style={[styles.detailsContainer]}
-                placeholder="Enter password"
+                placeholder="Enter new password"
                 passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
                 secureTextEntry={passwordVisible}
               />
               <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setPasswordVisible(!passwordVisible)} />
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate("MainScreen")} style={styles.createButton}>
-              <Text style={styles.createButtonText}>Login</Text>
-            </TouchableOpacity>
+            <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Confirm New Password</Text>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Signup")} style={{ marginTop: 30 }}>
-              <Text style={{ color: accentColor5, fontSize: 20, textAlign: "center" }}>I'm new here</Text>
-            </TouchableOpacity>
+            <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0, paddingLeft: 0 }]}>
+              <TextInput
+                placeholderTextColor={textColor2}
+                style={styles.detailsContainer}
+                placeholder="Confirm new password"
+                passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
+                secureTextEntry={confirmPasswordVisible}
+              />
+              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
+            </View>
 
+            <TouchableOpacity onPress={() => navigation.navigate("MainScreen", { screen: "Account" })} style={styles.createButton}>
+              <Text style={styles.createButtonText}>Update</Text>
+            </TouchableOpacity>
           </View>
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -111,7 +125,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     marginTop: 30,
     alignItems: "center",
-    borderRadius: 25,
+    borderRadius: 20,
   },
   createButtonText: {
     color: "white",
