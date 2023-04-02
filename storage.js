@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { AUTHTOKEN } from "./constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -42,8 +43,10 @@ export async function StoreUserToken(token) {
   return token && storeData(AUTHTOKEN, token);
 }
 
-export async function GetStoredUserToken() {
-  return await getData(AUTHTOKEN);
+export async function GetStoredUserToken(navigation) {
+  const token = await getData(AUTHTOKEN);
+  if (!token) navigation?.navigate("Login")
+  return token
 }
 
 export async function ClearStorage() {

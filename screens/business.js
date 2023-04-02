@@ -17,29 +17,75 @@ import { CopyToClipBoard, OpenLink } from "../constants";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
 import { Header } from "../components/header";
-import { FETCH_BUSINESSES_DETAILS } from "../graphql/queries";
+import { CHECK_LIKED_BUSINESS, FETCH_BUSINESSES_DETAILS, FETCH_COMMENTS, FETCH_LIKED_BUSINESS } from "../graphql/queries";
 import { GetStoredUserToken } from "../storage";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { LIKE_BUSINESS, POST_COMMENT } from "../graphql/mutations";
 
 export default function BusinessInfo() {
   const [readMore, setreadMore] = useState(false)
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState()
   const route = useRoute()
+  const navigation = useNavigation()
+  const [liked, setliked] = useState(false)
+  const [comment, setcomment] = useState("")
+  const [comments, setComments] = useState()
 
 
   async function FetchBusiness(id) {
     if (!id) return
-    const token = await GetStoredUserToken()
+    const token = await GetStoredUserToken(navigation)
     const response = await FETCH_BUSINESSES_DETAILS(token, id)
     if (response) {
       setData(response.FetchBusiness)
     }
   }
 
+  async function CheckLikeState(id) {
+    const token = await GetStoredUserToken(navigation)
+    const response = await CHECK_LIKED_BUSINESS(token, id)
+    if (response?.CheckIFLiked) {
+      setliked(true)
+    }
+  }
+
+
+  async function LikeBusiness(bizId) {
+    const token = await GetStoredUserToken(navigation)
+    const response = await LIKE_BUSINESS(token, bizId)
+    if (response.LikeBusiness) {
+      setliked(true)
+    } else {
+      setliked(false)
+    }
+  }
+
+
+  async function FetchComments() {
+    const token = await GetStoredUserToken(navigation)
+    const response = await FETCH_COMMENTS(token, route.params?.id)
+    if (response) {
+      setComments(response.FetchComments)
+    }
+  }
+
+  async function WriteComment() {
+    const token = await GetStoredUserToken(navigation)
+    const response = await POST_COMMENT({
+      token: token,
+      bizId: route.params?.id,
+      message: comment
+    })
+    if (response.PostComment) {
+      FetchComments()
+    }
+  }
+
   useEffect(() => {
     const val = route.params?.id
     FetchBusiness(val)
+    CheckLikeState(val)
   }, [])
 
   return (
@@ -48,7 +94,7 @@ export default function BusinessInfo() {
       {data &&
         <ScrollView style={{ backgroundColor: accentColor1, paddingBottom: 50 }}>
           <Image
-            source={require("../assets/biz2.avif")}
+            source={data.image ? { uri: data.image } : require("../assets/biz2.avif")}
             resizeMode="cover"
             style={{ height: 300, width: Dimensions.get("screen").width }}
           ></Image>
@@ -86,13 +132,13 @@ export default function BusinessInfo() {
             </TouchableOpacity>
 
             <View style={styles.feedBackContainer}>
-              <TouchableOpacity style={styles.feedBackButton}>
+              <TouchableOpacity style={styles.feedBackButton} onPress={() => LikeBusiness(data.id)}>
                 <Ionicons
-                  name="heart-outline"
+                  name={liked ? "heart" : "heart-outline"}
                   size={30}
-                  color={textColor}
+                  color={liked ? "red" : textColor}
                 />
-                <Text style={{ color: textColor, fontSize: 18 }}>Like</Text>
+                <Text style={{ color: liked ? "red" : textColor, fontSize: 18 }}>{liked ? "Liked" : "Like"}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setVisible(true)} style={styles.feedBackButton}>
                 <Ionicons style={styles.eventLikeIcon} name="chatbubble-outline" size={24} color={textColor} />
@@ -115,10 +161,10 @@ export default function BusinessInfo() {
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
           style={styles.bottomNavigationView}>
-
           <View style={{ borderBottomColor: accentColor6, borderBottomWidth: 0.2, padding: 20 }}>
             <Text style={{ fontSize: 25, color: textColor }}>Comments</Text>
           </View>
+
           <ScrollView>
             {Array(20).fill(null).map((_, i) => (
               <View key={i} style={{ borderBottomColor: accentColor3, borderBottomWidth: 0.2, padding: 10 }}>
@@ -140,8 +186,9 @@ export default function BusinessInfo() {
               multiline
               placeholder="Type Comment Here"
               placeholderTextColor={textColor2}
+              onChangeText={(e) => setcomment(e)}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => WriteComment(b)}>
               <Ionicons name="md-send" size={30} color={accentColor4} />
             </TouchableOpacity>
           </View>

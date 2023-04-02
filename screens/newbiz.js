@@ -24,6 +24,7 @@ import { BusinessTypes } from "../types/types";
 import { capitalize } from "../constants";
 import { GetStoredUserToken } from "../storage";
 import { useNavigation } from "@react-navigation/native";
+import { UploadFile } from "../graphql/network";
 
 
 const typedata = BusinessTypes.map((t) => ({ key: t.toUpperCase(), value: capitalize(t.toLowerCase()) }))
@@ -67,7 +68,7 @@ export default function NewBusiness() {
 
   useEffect(() => {
     async function SetToken() {
-      const token = await GetStoredUserToken();
+      const token = await GetStoredUserToken(navigation);
       setInput({ ...input, token: token })
     }
     SetToken()
@@ -142,7 +143,7 @@ export default function NewBusiness() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 

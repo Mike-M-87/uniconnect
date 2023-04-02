@@ -72,6 +72,7 @@ export interface FetchBusinessListInput {
   token: string
   type: BusinessType
   searchTerm: string
+  mine: boolean
 }
 
 export interface FetchBusinessListResponse {
@@ -107,4 +108,56 @@ export interface CreateBusinessInput {
 }
 export interface CreateBusinessResponse {
   CreateBusiness: boolean
+}
+export interface LikeBusinessResponse {
+  LikeBusiness: boolean
+}
+
+export interface CheckLikedResponse {
+  CheckIFLiked: boolean
+}
+
+export interface PostCommentResponse {
+  PostComment: boolean
+}
+
+export interface PostCommentInput {
+  token:string
+  bizId:string
+  message:string
+}
+
+export interface FetchLikedBusinessResponse {
+  FetchLikedBusiness: FetchLikedBusiness[]
+}
+
+export interface FetchLikedBusiness {
+  id: string
+  name: string
+  type: string
+  description: string
+  location: string
+  website: string
+  contact: string
+  image: string
+  ownerName: string
+}
+
+export interface FilestackResponse {
+  url: string
+  size: number
+  type: string
+  filename: string
+  key: string
+}
+
+export interface FetchCommentResponse {
+  FetchComments: FetchComment[]
+}
+
+export interface FetchComment {
+  businessId: string
+  sender: string
+  Message: string
+  date: string
 }

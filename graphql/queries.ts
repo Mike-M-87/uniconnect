@@ -1,5 +1,5 @@
 import { gql } from "../node_modules/graphql-request/build/esm/index";
-import { FetchBusinessDetailsResponse, FetchBusinessListInput, FetchBusinessListResponse, FetchUserResponse } from "../types/types";
+import { CheckLikedResponse, FetchBusinessDetailsResponse, FetchBusinessListInput, FetchBusinessListResponse, FetchCommentResponse, FetchLikedBusinessResponse, FetchUserResponse } from "../types/types";
 import { makeRequest } from "./network";
 
 export async function FETCH_USER_DATA(authToken: string) {
@@ -55,5 +55,51 @@ export async function FETCH_BUSINESSES_DETAILS(authToken: string, businessId: st
     }
   }`
   const res: FetchBusinessDetailsResponse = await makeRequest(query, { token: authToken, bizId: businessId }, false)
+  return res
+}
+
+
+export async function FETCH_LIKED_BUSINESS(authToken: string) {
+  const query = gql`
+  query refactored32($token: String!) {
+    FetchLikedBusiness(token: $token) {
+      id
+      name
+      type
+      description
+      location
+      website
+      contact
+      image
+      ownerName
+    }
+  }`
+  const res: FetchLikedBusinessResponse = await makeRequest(query, { token: authToken }, false)
+  return res
+}
+
+
+export async function CHECK_LIKED_BUSINESS(authToken: string, businessId: string) {
+  const query = gql`
+  query refactored366($token: String!, $bizId: String!) {
+    CheckIFLiked(token: $token, bizId: $bizId)
+  }`
+  const res: CheckLikedResponse = await makeRequest(query, { token: authToken, bizId: businessId }, false)
+  return res
+}
+
+
+
+export async function FETCH_COMMENTS(authToken: string, businessId: string) {
+  const query = gql`
+  query refactored797($token: String!, $bizId: String!) {
+    FetchComments(token: $token, bizId: $bizId) {
+      businessId
+      sender
+      Message
+      date
+    }
+  }`
+  const res: FetchCommentResponse = await makeRequest(query, { token: authToken, bizId: businessId }, false)
   return res
 }

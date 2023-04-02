@@ -1,6 +1,6 @@
 import { gql } from "../node_modules/graphql-request/build/esm/index";
 import { makeRequest } from "./network";
-import { CreateBusinessResponse, ErrorResponse, LoginInput, LoginResponse, RegisterInput, RegisterResponse } from "../types/types";
+import { CreateBusinessResponse, ErrorResponse, LikeBusinessResponse, LoginInput, LoginResponse, PostCommentInput, PostCommentResponse, RegisterInput, RegisterResponse } from "../types/types";
 
 
 
@@ -35,5 +35,24 @@ export async function CREATE_BUSINESS(body: RegisterInput) {
       CreateBusiness(input: $input)
     }`;
   const res: CreateBusinessResponse = await makeRequest(query, body, true);
+  return res
+}
+
+export async function LIKE_BUSINESS(authToken: string, businessId: string) {
+  const query = gql`
+    mutation refactored500($token: String!, $bizId: String!) {
+      LikeBusiness(token: $token, bizId: $bizId)
+    }`;
+  const res: LikeBusinessResponse = await makeRequest(query, { token: authToken, bizId: businessId }, false);
+  return res
+}
+
+
+export async function POST_COMMENT(body: PostCommentInput) {
+  const query = gql`
+    mutation refactored93($input: PostCommentInput!) {
+      PostComment(input: $input)
+  }`;
+  const res: PostCommentResponse = await makeRequest(query, body, false);
   return res
 }

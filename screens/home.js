@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
 import { useEffect, useState } from "react";
@@ -23,7 +23,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/header";
 import { BusinessType, BusinessTypes } from "../types/types";
 import { GetStoredUserToken } from "../storage";
-import { FETCH_BUSINESSES_LIST } from "../graphql/queries";
+import { FETCH_BUSINESSES_LIST, FETCH_LIKED_BUSINESS } from "../graphql/queries";
+import { LIKE_BUSINESS } from "../graphql/mutations";
 
 
 export default function Home() {
@@ -31,18 +32,20 @@ export default function Home() {
   const navigation = useNavigation()
   const [searchTerm, setSearchTerm] = useState("")
   const [data, setData] = useState()
+  const [likes, setLikes] = useState()
 
 
   async function FetchCategoryBusiness() {
-    const token = await GetStoredUserToken()
+    const token = await GetStoredUserToken(navigation)
     const response = await FETCH_BUSINESSES_LIST({ token: token, type: category })
-    if (response) {
+    if (response.FetchBusinessList) {
       setData(response.FetchBusinessList)
     }
   }
 
   useEffect(() => {
     FetchCategoryBusiness()
+    FetchLikedBusiness()
   }, [category])
 
   useEffect(() => {
@@ -51,6 +54,25 @@ export default function Home() {
     }
   }, [searchTerm])
 
+  async function LikeBusiness(bizId) {
+    const token = await GetStoredUserToken(navigation)
+    const response = await LIKE_BUSINESS(token, bizId)
+    if (response.LikeBusiness) {
+      setLikes({ ...likes, [bizId]: true })
+    } else {
+      setLikes({ ...likes, [bizId]: false })
+    }
+  }
+
+  async function FetchLikedBusiness() {
+    const token = await GetStoredUserToken(navigation)
+    const response = await FETCH_LIKED_BUSINESS(token)
+    if (response) {
+      setLikes(Object.fromEntries(response.FetchLikedBusiness.map((b) => [b.id, true])))
+    }
+  }
+
+  console.log(likes);
 
   return (
     <LinearGradient
@@ -140,17 +162,17 @@ export default function Home() {
                             {biz.contact}
                           </Text>
                         </View>
-                        <TouchableOpacity onPress={() => OpenLink("https://wa.me/254113359777")} style={styles.chatButton}>
-                          <Ionicons name="chatbox" size={24} color="white" />
+                        <TouchableOpacity onPress={() => navigation.navigate("BusinessDetails", { id: biz.id })} style={styles.chatButton}>
+                          <MaterialIcons name="more" size={24} color="white" />
                         </TouchableOpacity>
                       </BlurView>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => LikeBusiness(biz.id)}>
                       <Ionicons
                         style={styles.eventLikeIcon}
                         name="heart"
                         size={30}
-                        color="black"
+                        color={likes && likes[biz.id] ? "red" : "black"}
                       />
                     </TouchableOpacity>
                   </ImageBackground>
@@ -205,12 +227,11 @@ const styles = StyleSheet.create({
   eventLikeIcon: {
     right: 0,
     position: "absolute",
-    color: "white",
     borderRadius: 20,
     margin: 10,
     overflow: "hidden",
     padding: 12,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgb(255,255,255)",
   },
   eventInfoContainer: {
     bottom: 0,
@@ -231,6 +252,7 @@ const styles = StyleSheet.create({
   },
   eventName: {
     color: "white",
+    textTransform:"capitalize",
     fontSize: 20,
     fontWeight: "600",
   },

@@ -65,8 +65,7 @@ export default function Account() {
     }
 
     async function GetUserData() {
-      const token = await GetStoredUserToken()
-      console.log("✅", token);
+      const token = await GetStoredUserToken(navigation)
       if (token) {
         const response = await FETCH_USER_DATA(token)
         if (response == undefined) {
@@ -108,8 +107,8 @@ export default function Account() {
       colors={[accentColor1, accentColor2]}
     >
       <SafeAreaView>
-        {data &&
-          <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 30 }}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 30 }}>
+          {data && <>
             <View style={{ padding: 10 }}>
               <View style={{ flexDirection: "column", gap: 20, alignItems: "center", marginBottom: 20 }}>
                 <Image source={{ uri: image }} style={{ height: 100, width: 100, borderRadius: 50, borderColor: accentColor3, borderWidth: 0.2 }} />
@@ -194,35 +193,35 @@ export default function Account() {
                 </View>
               }
             </View>
+          </>
+          }
 
-            <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Support</Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Support</Text>
 
-            <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10, marginBottom: 120 }}>
-              <TouchableOpacity style={styles.accountOption}>
-                <View style={{ flexDirection: "column" }}>
-                  <Text style={{ color: textColor2, fontSize: 18 }}>
-                    Info
-                  </Text>
-                  <Text style={styles.optionText}>
-                    Help and Support
-                  </Text>
-                </View>
-                <EvilIcons name="chevron-right" size={24} color={textColor3} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  ClearStorage()
-                  navigation.navigate("Root")
-                }}
-                style={styles.logoutButton}>
-                <AntDesign name="logout" size={20} color={textColor3} />
-                <Text style={styles.logoutButtonText}>Logout</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10, marginBottom: 120 }}>
+            <TouchableOpacity style={styles.accountOption}>
+              <View style={{ flexDirection: "column" }}>
+                <Text style={{ color: textColor2, fontSize: 18 }}>
+                  Info
+                </Text>
+                <Text style={styles.optionText}>
+                  Help and Support
+                </Text>
+              </View>
+              <EvilIcons style={{marginLeft:"auto"}}  name="chevron-right" size={24} color={textColor3} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                ClearStorage()
+                navigation.navigate("Root")
+              }}
+              style={styles.logoutButton}>
+              <AntDesign name="logout" size={20} color={textColor3} />
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
 
-
-          </ScrollView>
-        }
       </SafeAreaView>
     </LinearGradient>
   );

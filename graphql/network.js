@@ -19,7 +19,7 @@ export async function makeRequest(query, body, withDefaultInput) {
       Alert.alert("Please login to continue");
       return undefined;
     }
-    Alert.alert(capitalize(errormsg) || "Network error");
+    Alert.alert(errormsg ? capitalize(errormsg) : "Network error");
     return null;
   }
 }

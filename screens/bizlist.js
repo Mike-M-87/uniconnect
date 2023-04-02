@@ -45,7 +45,7 @@ export default function BusinessList() {
   }, [searchTerm])
 
   async function FetchCategoryBusiness() {
-    const token = await GetStoredUserToken()
+    const token = await GetStoredUserToken(navigation)
     const response = await FETCH_BUSINESSES_LIST({ token: token, searchTerm: searchTerm ? searchTerm : null })
     if (response) {
       setData(response.FetchBusinessList)
