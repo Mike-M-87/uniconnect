@@ -55,8 +55,18 @@ export enum BusinessType {
   JOB,
   NEWS,
   HOUSING,
-  TUTOR
+  TUTOR,
 }
+
+export const BusinessTypes = [
+  "SHOP",
+  "SERVICE",
+  "EVENT",
+  "JOB",
+  "NEWS",
+  "HOUSING",
+  "TUTOR",
+]
 
 export interface FetchBusinessListInput {
   token: string
@@ -82,4 +92,19 @@ export interface FetchBusinessList {
   contact: string
   image: string
   ownerName: string
+}
+
+
+export interface CreateBusinessInput {
+  token: string
+  type: BusinessType
+  name: string
+  description: string
+  location: string
+  websitess: string
+  contact: string
+  image: string
+}
+export interface CreateBusinessResponse {
+  CreateBusiness: boolean
 }

@@ -1,6 +1,6 @@
 import { gql } from "../node_modules/graphql-request/build/esm/index";
 import { makeRequest } from "./network";
-import { ErrorResponse, LoginInput, LoginResponse, RegisterInput, RegisterResponse } from "../types/types";
+import { CreateBusinessResponse, ErrorResponse, LoginInput, LoginResponse, RegisterInput, RegisterResponse } from "../types/types";
 
 
 
@@ -24,5 +24,16 @@ export async function REGISTER(body: RegisterInput) {
       }
     }`;
   const res: RegisterResponse = await makeRequest(query, body, true);
+  return res
+}
+
+
+
+export async function CREATE_BUSINESS(body: RegisterInput) {
+  const query = gql`
+    mutation refactored270($input: CreateBusinessInput!) {
+      CreateBusiness(input: $input)
+    }`;
+  const res: CreateBusinessResponse = await makeRequest(query, body, true);
   return res
 }

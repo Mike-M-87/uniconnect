@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -12,24 +13,41 @@ import {
 } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { HapticButton } from "../components/haptic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { accentColor5, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
 import { dumCategories } from "./home";
 import { SelectList } from 'react-native-dropdown-select-list'
 import * as ImagePicker from 'expo-image-picker';
 import { Header } from "../components/header";
+import { CREATE_BUSINESS } from "../graphql/mutations";
+import { BusinessTypes } from "../types/types";
+import { capitalize } from "../constants";
+import { GetStoredUserToken } from "../storage";
+import { useNavigation } from "@react-navigation/native";
 
 
-const data = [
-  { key: 'Canada', value: 'Canada' },
-  { key: 'England', value: 'England' },
-  { key: 'Pakistan', value: 'Pakistan' },
-  { key: 'India', value: 'India' },
-  { key: 'NewZealand', value: 'NewZealand' },
-]
+const typedata = BusinessTypes.map((t) => ({ key: t.toUpperCase(), value: capitalize(t.toLowerCase()) }))
+
 export default function NewBusiness() {
-  const [selected, setSelected] = useState("");
-  const [image, setImage] = useState();
+  const navigation = useNavigation()
+  const [input, setInput] = useState({
+    token: "",
+    type: "",
+    name: "",
+    description: "",
+    location: "",
+    contact: "",
+    website: "",
+    image: ""
+  })
+
+  async function AddMyBusiness() {
+    const response = await CREATE_BUSINESS(input)
+    if (response?.CreateBusiness) {
+      Alert.alert("New Business added")
+      navigation.navigate("MainScreen", { screen: "Home" })
+    }
+  }
 
 
   async function PickImage() {
@@ -40,14 +58,20 @@ export default function NewBusiness() {
         quality: 1,
       });
       if (!result.canceled) {
-        setImage(result.assets[0].uri);
+        setInput({ ...input, image: result.assets[0].uri })
       }
     } catch (error) {
       console.log(error);
     }
   }
 
-  console.log(image);
+  useEffect(() => {
+    async function SetToken() {
+      const token = await GetStoredUserToken();
+      setInput({ ...input, token: token })
+    }
+    SetToken()
+  }, [])
 
 
   return (
@@ -58,15 +82,15 @@ export default function NewBusiness() {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}>
-          {image ?
+          {input.image ?
             <>
               <Image
-                source={{ uri: image }}
+                source={{ uri: input.image }}
                 resizeMode="cover"
                 style={{ height: 300, width: Dimensions.get("screen").width }}
               >
               </Image>
-              <TouchableOpacity style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 15 }} onPress={() => setImage(null)}>
+              <TouchableOpacity style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 15 }} onPress={() => setInput({ ...input, image: null })}>
                 <EvilIcons name="trash" size={24} color={textColor3} />
                 <Text style={{ color: textColor3 }}>Remove image</Text>
               </TouchableOpacity>
@@ -94,24 +118,25 @@ export default function NewBusiness() {
               arrowicon={<EvilIcons name="chevron-down" size={24} color={textColor2} />}
               searchicon={<EvilIcons name="search" size={24} color={textColor2} />}
               closeicon={<EvilIcons name="chevron-up" size={24} color={textColor2} />}
-              setSelected={setSelected} data={dumCategories}
+              setSelected={(e) => setInput({ ...input, type: e })} data={typedata}
             />
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Business Name</Text>
-            <TextInput placeholder="Name of your business" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput onChangeText={(e) => setInput({ ...input, name: e })} placeholder="Name of your business" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Description</Text>
-            <TextInput placeholder="Business description" placeholderTextColor={textColor2} numberOfLines={4} style={styles.detailsContainer} />
+            <TextInput placeholder="Business description" onChangeText={(e) => setInput({ ...input, description: e })} placeholderTextColor={textColor2} numberOfLines={4} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Location</Text>
-            <TextInput placeholder="Where the business is located" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput placeholder="Where the business is located" onChangeText={(e) => setInput({ ...input, location: e })} placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Website (optional)</Text>
-            <TextInput placeholder="Website for your business (Optional)" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput placeholder="Website for your business (Optional)" onChangeText={(e) => setInput({ ...input, website: e })} placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>WhatsApp Business Contact</Text>
-            <TextInput keyboardType="phone-pad" placeholder="254xxxxxxxx" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput keyboardType="phone-pad" placeholder="254xxxxxxxx" onChangeText={(e) => setInput({ ...input, contact: e })} placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
 
-            <TouchableOpacity style={styles.createButton}>
+            <TouchableOpacity style={styles.createButton} onPress={() => AddMyBusiness()}>
               <Text style={styles.createButtonText}>Create Business</Text>
             </TouchableOpacity>
           </View>

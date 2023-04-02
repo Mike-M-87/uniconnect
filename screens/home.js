@@ -21,7 +21,7 @@ import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, a
 import { OpenChat, OpenLink, capitalize } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/header";
-import { BusinessType } from "../types/types";
+import { BusinessType, BusinessTypes } from "../types/types";
 import { GetStoredUserToken } from "../storage";
 import { FETCH_BUSINESSES_LIST } from "../graphql/queries";
 
@@ -80,7 +80,7 @@ export default function Home() {
             showsHorizontalScrollIndicator={false}
             style={{ paddingVertical: 25, paddingLeft: 10 }}
           >
-            {Object.values(BusinessType).map((cat, index) => (
+            {BusinessTypes.map((cat, index) => (
               <TouchableOpacity
                 onPress={() => setcategory(cat)}
                 key={index}
@@ -113,9 +113,7 @@ export default function Home() {
               showsHorizontalScrollIndicator={false}
             >
               {data.map((biz, i) => (
-                <HapticButton
-                  weight="heavy"
-                  onClick={() => navigation.navigate("BusinessDetails", { id: biz.id })}
+                <View
                   key={i}
                   style={{
                     paddingHorizontal: 15,
@@ -156,7 +154,7 @@ export default function Home() {
                       />
                     </TouchableOpacity>
                   </ImageBackground>
-                </HapticButton>
+                </View>
               ))}
             </ScrollView>
             :

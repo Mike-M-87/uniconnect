@@ -66,7 +66,7 @@ export default function Account() {
 
     async function GetUserData() {
       const token = await GetStoredUserToken()
-      console.log("✅",token);
+      console.log("✅", token);
       if (token) {
         const response = await FETCH_USER_DATA(token)
         if (response == undefined) {
@@ -78,12 +78,12 @@ export default function Account() {
     }
 
     GetUserData()
-    CheckBiometric()
+    // CheckBiometric()
   }, [])
 
   useEffect(() => {
-    if (bioSwitch)
-      CheckAuth()
+    if (bioSwitch) return
+    // CheckAuth()
   }, [bioSwitch])
 
 
@@ -175,7 +175,7 @@ export default function Account() {
                 <Text style={styles.optionText}>
                   Email {data.verified ? "Verified" : "Not Verified"}
                 </Text>
-                <Ionicons name={data.verified ? "checkmark-circle":"close-circle"} size={24} style={{ marginLeft: "auto" }} color={textColor3} />
+                <Ionicons name={data.verified ? "checkmark-circle" : "close-circle"} size={24} style={{ marginLeft: "auto" }} color={textColor3} />
               </TouchableOpacity>
 
               {hasBiometric &&
