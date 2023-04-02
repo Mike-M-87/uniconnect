@@ -15,17 +15,42 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BlurView } from "expo-blur";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, textColor, textColorAlt } from "../styles/main";
-import { OpenChat, OpenLink } from "../constants";
+import { OpenChat, OpenLink, capitalize } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/header";
+import { BusinessType } from "../types/types";
+import { GetStoredUserToken } from "../storage";
+import { FETCH_BUSINESSES_LIST } from "../graphql/queries";
 
 
 export default function Home() {
-  const [category, setcategory] = useState(dumCategories[0]);
+  const [category, setcategory] = useState(Object.values(BusinessType)[0]);
   const navigation = useNavigation()
+  const [searchTerm, setSearchTerm] = useState("")
+  const [data, setData] = useState()
+
+
+  async function FetchCategoryBusiness() {
+    const token = await GetStoredUserToken()
+    const response = await FETCH_BUSINESSES_LIST({ token: token, type: category })
+    if (response) {
+      setData(response.FetchBusinessList)
+    }
+  }
+
+  useEffect(() => {
+    FetchCategoryBusiness()
+  }, [category])
+
+  useEffect(() => {
+    if (searchTerm != "") {
+      navigation.navigate("BusinessList", { search: searchTerm })
+    }
+  }, [searchTerm])
+
 
   return (
     <LinearGradient
@@ -43,15 +68,19 @@ export default function Home() {
               placeholder="Search"
               placeholderTextColor={accentColor4}
               style={styles.searchInput}
+              value={searchTerm}
+              onChangeText={(e) => setSearchTerm(e)}
             />
-            <Ionicons name="filter" size={24} color={accentColor4} />
+            <TouchableOpacity onPress={() => setSearchTerm("")} >
+              {searchTerm && <Ionicons name="close" size={24} color={accentColor4} />}
+            </TouchableOpacity>
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={{ paddingVertical: 25, paddingLeft: 10 }}
           >
-            {dumCategories.map((cat, index) => (
+            {Object.values(BusinessType).map((cat, index) => (
               <TouchableOpacity
                 onPress={() => setcategory(cat)}
                 key={index}
@@ -63,13 +92,13 @@ export default function Home() {
                   styles.categoryItem,
                 ]}
               >
-                <Text style={{ color: textColor, fontSize: 20 }}>{cat}</Text>
+                <Text style={{ color: textColor, fontSize: 20 }}>{capitalize(cat.toString().toLowerCase())}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
           <View style={styles.titleHeader}>
             <Text style={{ fontSize: 35, color: textColor }}>
-              {category} Category
+              {capitalize(category.toString().toLowerCase())} Category
             </Text>
             <TouchableOpacity onPress={() => {
               navigation.navigate("BusinessList")
@@ -77,16 +106,16 @@ export default function Home() {
               <Text style={{ color: accentColor5, fontSize: 20 }}>See all</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-          >
-            {Array(20)
-              .fill(null)
-              .map((_, i) => (
+          {data && data?.length > 0 ?
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+            >
+              {data.map((biz, i) => (
                 <HapticButton
                   weight="heavy"
+                  onClick={() => navigation.navigate("BusinessDetails", { id: biz.id })}
                   key={i}
                   style={{
                     paddingHorizontal: 15,
@@ -107,10 +136,10 @@ export default function Home() {
                       >
                         <View style={{ flexDirection: "column", padding: 10 }}>
                           <Text style={styles.eventName}>
-                            3X Wear Sneakers
+                            {biz.name}
                           </Text>
                           <Text style={styles.bizNumber}>
-                            0712345678
+                            {biz.contact}
                           </Text>
                         </View>
                         <TouchableOpacity onPress={() => OpenLink("https://wa.me/254113359777")} style={styles.chatButton}>
@@ -129,22 +158,15 @@ export default function Home() {
                   </ImageBackground>
                 </HapticButton>
               ))}
-          </ScrollView>
+            </ScrollView>
+            :
+            <Text style={{ color: textColor, textAlign: "center", marginTop: 100 }}>No businesses found</Text>
+          }
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );
 }
-
-export const dumCategories = [
-  "Shops",
-  "Services",
-  "Events",
-  "Jobs",
-  "News",
-  "Housing",
-  "Tutors",
-];
 
 const styles = StyleSheet.create({
   searchContainer: {

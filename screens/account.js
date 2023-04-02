@@ -23,6 +23,9 @@ import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, a
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { ClearStorage, GetStoredUserToken } from "../storage";
+import { FETCH_USER_DATA } from "../graphql/queries";
+import { FetchUserResponse } from "../types/types";
 
 
 
@@ -32,6 +35,7 @@ export default function Account() {
   const navigation = useNavigation()
   const [hasBiometric, sethasBiometric] = useState(false)
   const [bioSwitch, setBioSwitch] = useState(false)
+  const [data, setData] = useState()
 
   const userNameRef = useRef()
 
@@ -59,6 +63,21 @@ export default function Account() {
         console.log(error);
       }
     }
+
+    async function GetUserData() {
+      const token = await GetStoredUserToken()
+      console.log("✅",token);
+      if (token) {
+        const response = await FETCH_USER_DATA(token)
+        if (response == undefined) {
+          navigation.navigate("Login")
+        } else if (response.fetchUserData) {
+          setData(response.fetchUserData)
+        }
+      }
+    }
+
+    GetUserData()
     CheckBiometric()
   }, [])
 
@@ -89,115 +108,121 @@ export default function Account() {
       colors={[accentColor1, accentColor2]}
     >
       <SafeAreaView>
-        <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 30 }}>
-          <View style={{ padding: 10 }}>
-            <View style={{ flexDirection: "column", gap: 20, alignItems: "center", marginBottom: 20 }}>
-              <Image source={{ uri: image }} style={{ height: 100, width: 100, borderRadius: 50, borderColor: accentColor3, borderWidth: 0.2 }} />
-              <TouchableOpacity onPress={() => PickImage()} style={{ backgroundColor: accentColor5, paddingVertical: 5, paddingHorizontal: 10, borderRadius: 25 }}>
-                <Text style={{ color: textColor, fontSize: 18 }}>
-                  Change Profile Picture
+        {data &&
+          <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 30 }}>
+            <View style={{ padding: 10 }}>
+              <View style={{ flexDirection: "column", gap: 20, alignItems: "center", marginBottom: 20 }}>
+                <Image source={{ uri: image }} style={{ height: 100, width: 100, borderRadius: 50, borderColor: accentColor3, borderWidth: 0.2 }} />
+                <TouchableOpacity onPress={() => PickImage()} style={{ backgroundColor: accentColor5, paddingVertical: 5, paddingHorizontal: 10, borderRadius: 25 }}>
+                  <Text style={{ color: textColor, fontSize: 18 }}>
+                    Change Profile Picture
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+
+              <View
+                style={styles.detailsContainer}>
+                <View>
+                  <Text style={{ color: textColor2 }}>Account Name</Text>
+                  <Text style={styles.details}>{data.name}</Text>
+                </View>
+              </View>
+
+              <View style={styles.detailsContainer}>
+                <View style={{ flexDirection: "column" }}>
+                  <Text style={{ color: textColor2 }}>Username</Text>
+                  <TextInput numberOfLines={1} ref={userNameRef} editable={editName} style={styles.details}>@{data.username}</TextInput>
+                </View>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    if (editName) {
+                      seteditName(false)
+                      Alert.alert("Saved username")
+                    }
+                    seteditName(true);
+                    userNameRef.current.focus()
+                  }
+                  }
+                  style={{ backgroundColor: accentColor5, padding: 5, borderRadius: 5 }}>
+                  {editName ? <Ionicons name="md-checkmark-circle" size={20} color={textColor} /> : <AntDesign name="edit" size={17} color={textColor} />}
+                </TouchableOpacity>
+              </View>
+
+
+              <View style={styles.detailsContainer}>
+                <View>
+                  <Text style={{ color: textColor2 }}>Email</Text>
+                  <Text style={styles.details}>{data.email}</Text>
+                </View>
+              </View>
+            </View>
+
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Preferences</Text>
+
+            <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10 }}>
+              <TouchableOpacity onPress={() => navigation.navigate("Change Password")} style={styles.accountOption}>
+                <MaterialCommunityIcons name="form-textbox-password" size={24} color={textColor3} />
+                <Text style={styles.optionText}>
+                  Change Password
                 </Text>
+                <EvilIcons name="chevron-right" size={24} style={{ marginLeft: "auto" }} color={textColor3} />
               </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => navigation.navigate("Verify Email")} style={styles.accountOption}>
+                <Ionicons name="mail-outline" size={24} color={textColor3} />
+                <Text style={styles.optionText}>
+                  Email {data.verified ? "Verified" : "Not Verified"}
+                </Text>
+                <Ionicons name={data.verified ? "checkmark-circle":"close-circle"} size={24} style={{ marginLeft: "auto" }} color={textColor3} />
+              </TouchableOpacity>
+
+              {hasBiometric &&
+                <View style={[styles.accountOption, { borderBottomWidth: 0 }]}>
+                  <Ionicons name="finger-print" size={24} color={textColor3} />
+                  <Text style={styles.optionText}>
+                    Biometric Authentication
+                  </Text>
+                  <Switch
+                    trackColor={{ false: accentColor3, true: accentColor5 }}
+                    ios_backgroundColor={accentColor3}
+                    onValueChange={() => setBioSwitch(!bioSwitch)}
+                    value={bioSwitch}
+                    style={{ marginLeft: "auto", }}
+                  />
+                </View>
+              }
             </View>
 
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Support</Text>
 
-            <View
-              style={styles.detailsContainer}>
-              <View>
-                <Text style={{ color: textColor2 }}>Account Name</Text>
-                <Text style={styles.details}>John Wafula</Text>
-              </View>
-            </View>
-
-            <View style={styles.detailsContainer}>
-              <View style={{ flexDirection: "column" }}>
-                <Text style={{ color: textColor2 }}>Username</Text>
-                <TextInput numberOfLines={1} ref={userNameRef} editable={editName} style={styles.details}>@mikey</TextInput>
-              </View>
-
+            <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10, marginBottom: 120 }}>
+              <TouchableOpacity style={styles.accountOption}>
+                <View style={{ flexDirection: "column" }}>
+                  <Text style={{ color: textColor2, fontSize: 18 }}>
+                    Info
+                  </Text>
+                  <Text style={styles.optionText}>
+                    Help and Support
+                  </Text>
+                </View>
+                <EvilIcons name="chevron-right" size={24} color={textColor3} />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (editName) {
-                    seteditName(false)
-                    // Alert.alert("Saved username")
-                  }
-                  seteditName(true);
-                  userNameRef.current.focus()
-                }
-                }
-                style={{ backgroundColor: accentColor5, padding: 5, borderRadius: 5 }}>
-                {editName ? <Ionicons name="md-checkmark-circle" size={20} color={textColor} /> : <AntDesign name="edit" size={17} color={textColor} />}
+                  ClearStorage()
+                  navigation.navigate("Root")
+                }}
+                style={styles.logoutButton}>
+                <AntDesign name="logout" size={20} color={textColor3} />
+                <Text style={styles.logoutButtonText}>Logout</Text>
               </TouchableOpacity>
             </View>
 
 
-            <View style={styles.detailsContainer}>
-              <View>
-                <Text style={{ color: textColor2 }}>Email</Text>
-                <Text style={styles.details}>mikey1234@gmail.com</Text>
-              </View>
-            </View>
-          </View>
-
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Preferences</Text>
-
-          <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10 }}>
-            <TouchableOpacity onPress={() => navigation.navigate("Change Password")} style={styles.accountOption}>
-              <MaterialCommunityIcons name="form-textbox-password" size={24} color={textColor3} />
-              <Text style={styles.optionText}>
-                Change Password
-              </Text>
-              <EvilIcons name="chevron-right" size={24} style={{ marginLeft: "auto" }} color={textColor3} />
-            </TouchableOpacity>
-
-            <TouchableOpacity  onPress={() => navigation.navigate("Verify Email")} style={styles.accountOption}>
-              <Ionicons name="mail-outline" size={24} color={textColor3} />
-              <Text style={styles.optionText}>
-                Email Verified
-              </Text>
-              <Ionicons name="checkmark-circle" size={24} style={{ marginLeft: "auto" }} color={textColor3} />
-            </TouchableOpacity>
-
-            {hasBiometric &&
-              <View style={[styles.accountOption, { borderBottomWidth: 0 }]}>
-                <Ionicons name="finger-print" size={24} color={textColor3} />
-                <Text style={styles.optionText}>
-                  Biometric Authentication
-                </Text>
-                <Switch
-                  trackColor={{ false: accentColor3, true: accentColor5 }}
-                  ios_backgroundColor={accentColor3}
-                  onValueChange={() => setBioSwitch(!bioSwitch)}
-                  value={bioSwitch}
-                  style={{ marginLeft: "auto", }}
-                />
-              </View>
-            }
-          </View>
-
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Support</Text>
-
-          <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10, marginBottom: 120 }}>
-            <TouchableOpacity style={styles.accountOption}>
-              <View style={{ flexDirection: "column" }}>
-                <Text style={{ color: textColor2, fontSize: 18 }}>
-                  Info
-                </Text>
-                <Text style={styles.optionText}>
-                  Help and Support
-                </Text>
-              </View>
-              <EvilIcons name="chevron-right" size={24} color={textColor3} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Root")} style={styles.logoutButton}>
-              <AntDesign name="logout" size={20} color={textColor3} />
-              <Text style={styles.logoutButtonText}>Logout</Text>
-            </TouchableOpacity>
-          </View>
-
-
-        </ScrollView>
-
+          </ScrollView>
+        }
       </SafeAreaView>
     </LinearGradient>
   );

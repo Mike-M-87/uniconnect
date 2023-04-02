@@ -35,7 +35,7 @@ export default function App() {
             headerShown: false, headerStyle: { backgroundColor: accentColor7, },
             headerTitleStyle: { color: textColor2 }
           }}
-          initialRouteName="Verify Email">
+          initialRouteName="MainScreen">
           <Stack.Screen options={{ headerShown: true }} name="Login" component={Login} />
           <Stack.Screen options={{ headerShown: true }} name="Signup" component={Signup} />
           <Stack.Screen options={{ headerShown: true }} name="Change Password" component={ChangePassword} />

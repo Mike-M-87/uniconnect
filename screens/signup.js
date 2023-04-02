@@ -1,10 +1,6 @@
 import {
-  Dimensions,
   Image,
-  ImageBackground,
   KeyboardAvoidingView,
-  Linking,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,34 +9,40 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons, AntDesign, EvilIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { HapticButton } from "../components/haptic";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { BlurView } from "expo-blur";
-import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
+import {
+  accentColor3, accentColor5,
+  accentColor7, accentColor8, textColor, textColor2, textColor3
+} from "../styles/main";
 import { useNavigation } from "@react-navigation/native";
-import { dumCategories } from "./home";
-import { SelectList } from 'react-native-dropdown-select-list'
-import * as ImagePicker from 'expo-image-picker';
-import { Header } from "../components/header";
+import { REGISTER } from "../graphql/mutations";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AUTHTOKEN } from "../constants";
+import { StoreUserToken } from "../storage";
 
 
-
-
-const data = [
-  { key: 'Canada', value: 'Canada' },
-  { key: 'England', value: 'England' },
-  { key: 'Pakistan', value: 'Pakistan' },
-  { key: 'India', value: 'India' },
-  { key: 'NewZealand', value: 'NewZealand' },
-]
 export default function Signup() {
-  const [selected, setSelected] = useState("");
-  const [categories, setCategories] = useState([]);
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(true);
   const navigation = useNavigation()
+  const [creds, setCreds] = useState({
+    fullname: "",
+    username: "",
+    email: "",
+    password: "",
+    confirmpassword: "",
+  })
+
+  async function RegisterUser() {
+    const response = await REGISTER(creds)
+    if (response?.Register) {
+      const stored = await StoreUserToken(response.Register.token)
+      if (stored) {
+        navigation.navigate("MainScreen", { screen: "Home" })
+      }
+    }
+  }
 
 
 
@@ -58,40 +60,41 @@ export default function Signup() {
           <View style={{ marginHorizontal: 10, marginTop: 15, paddingBottom: 20 }}>
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>FullName</Text>
-            <TextInput placeholder="Enter your name" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput placeholder="Enter your name" onChangeText={(e) => setCreds({ ...creds, fullname: e })} placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Username</Text>
-            <TextInput placeholder="Enter a custom username" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput onChangeText={(e) => setCreds({ ...creds, username: e })} placeholder="Enter a custom username" placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Email Address</Text>
-            <TextInput keyboardType="email-address" placeholder="Enter your email address" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TextInput onChangeText={(e) => setCreds({ ...creds, email: e })} keyboardType="email-address" placeholder="Enter your email address" placeholderTextColor={textColor2} style={styles.detailsContainer} />
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Password</Text>
-            <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0,paddingLeft:0  }]}>
+            <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0, paddingLeft: 0 }]}>
               <TextInput
                 placeholderTextColor={textColor2}
                 style={[styles.detailsContainer]}
                 placeholder="Enter password"
                 passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
                 secureTextEntry={passwordVisible}
+                onChangeText={(e) => setCreds({ ...creds, password: e })}
               />
               <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setPasswordVisible(!passwordVisible)} />
             </View>
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Confirm Password</Text>
-
-            <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0,paddingLeft:0  }]}>
+            <View style={[styles.detailsContainer, { flexDirection: "row", gap: 5, alignItems: "center", paddingVertical: 0, paddingLeft: 0 }]}>
               <TextInput
                 placeholderTextColor={textColor2}
                 style={styles.detailsContainer}
                 placeholder="Confirm password"
                 passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
                 secureTextEntry={confirmPasswordVisible}
+                onChangeText={(e) => setCreds({ ...creds, confirmpassword: e })}
               />
               <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate("MainScreen")} style={styles.createButton}>
+            <TouchableOpacity onPress={() => RegisterUser()} style={styles.createButton}>
               <Text style={styles.createButtonText}>Create Account</Text>
             </TouchableOpacity>
 

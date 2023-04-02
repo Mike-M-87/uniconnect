@@ -15,16 +15,42 @@ import {
 import { Ionicons, EvilIcons, Octicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BlurView } from "expo-blur";
 import { dumCategories } from "./home";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColorAlt } from "../styles/main";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { GetStoredUserToken } from "../storage";
+import { FETCH_BUSINESSES_LIST } from "../graphql/queries";
 
 
 
 export default function BusinessList() {
   const navigation = useNavigation()
+  const route = useRoute()
+  const [searchTerm, setSearchTerm] = useState("")
+  const searchRef = useRef()
+  const [data, setData] = useState()
+
+  useEffect(() => {
+    const val = route.params?.search
+    if (val) {
+      searchRef.current?.focus()
+      setSearchTerm(val)
+    }
+  }, [])
+
+  useEffect(() => {
+    FetchCategoryBusiness()
+  }, [searchTerm])
+
+  async function FetchCategoryBusiness() {
+    const token = await GetStoredUserToken()
+    const response = await FETCH_BUSINESSES_LIST({ token: token, searchTerm: searchTerm ? searchTerm : null })
+    if (response) {
+      setData(response.FetchBusinessList)
+    }
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: accentColor8 }}>
@@ -34,32 +60,38 @@ export default function BusinessList() {
           placeholder="Search"
           placeholderTextColor={accentColor4}
           style={styles.searchInput}
+          ref={searchRef}
+          value={searchTerm}
+          onChangeText={(e) => setSearchTerm(e)}
         />
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ marginBottom: 0 }}>
-        {Array(20).fill(null).map((_, i) =>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("BusinessDetails")}
-            key={i}
-            style={styles.eventInfo}
-          >
-            <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
-            <View style={{ flexDirection: "column", padding: 10 }}>
-              <Text style={styles.eventName}>
-                3X Wear Sneakers
-              </Text>
-              <Text numberOfLines={2} style={styles.bizDescription}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum exercitationem veritatis sapiente nulla quas minima eligendi animi sint ipsam non repellat ipsum dolore voluptatibus, maiores deleniti. Eum explicabo libero quam?
-              </Text>
-            </View>
-            <EvilIcons name="chevron-right" size={24} color="white" />
-          </TouchableOpacity>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+      {(data && data?.length > 0) ?
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ marginBottom: 0 }}>
+          {data.map((biz, i) =>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("BusinessDetails", { id: biz.id })}
+              key={i}
+              style={styles.eventInfo}
+            >
+              <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
+              <View style={{ flexDirection: "column", padding: 10 }}>
+                <Text style={styles.eventName}>
+                  {biz.name}
+                </Text>
+                <Text numberOfLines={2} style={styles.bizDescription}>
+                  {biz.description}
+                </Text>
+              </View>
+              <EvilIcons style={{ marginLeft: "auto" }} name="chevron-right" size={24} color="white" />
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+        : <Text style={{ color: textColor, textAlign: "center", marginTop: 100 }}>No businesses found</Text>
+      }
+    </SafeAreaView >
   )
 }
 
@@ -108,19 +140,18 @@ const styles = StyleSheet.create({
     borderBottomColor: accentColor3,
     borderBottomWidth: 0.2,
     alignItems: "center",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   eventName: {
     color: textColor,
     fontSize: 20,
+    textTransform: "capitalize",
     fontWeight: "300",
   },
   bizDescription: {
     color: textColorAlt,
     fontSize: 15,
     marginTop: 5,
-    maxWidth: "80%",
+    maxWidth: "90%",
     fontWeight: "300",
   },
 });

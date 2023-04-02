@@ -14,81 +14,98 @@ import { Ionicons } from "@expo/vector-icons";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
 import { BottomSheet } from 'react-native-btr';
 import { CopyToClipBoard, OpenLink } from "../constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
 import { Header } from "../components/header";
+import { FETCH_BUSINESSES_DETAILS } from "../graphql/queries";
+import { GetStoredUserToken } from "../storage";
+import { useRoute } from "@react-navigation/native";
 
 export default function BusinessInfo() {
   const [readMore, setreadMore] = useState(false)
   const [visible, setVisible] = useState(false);
+  const [data, setData] = useState()
+  const route = useRoute()
+
+
+  async function FetchBusiness(id) {
+    if (!id) return
+    const token = await GetStoredUserToken()
+    const response = await FETCH_BUSINESSES_DETAILS(token, id)
+    if (response) {
+      setData(response.FetchBusiness)
+    }
+  }
+
+  useEffect(() => {
+    const val = route.params?.id
+    FetchBusiness(val)
+  }, [])
 
   return (
     <SafeAreaView style={{ backgroundColor: accentColor1 }}>
       <Header />
-      <ScrollView style={{ backgroundColor: accentColor1, paddingBottom: 50 }}>
-        <Image
-          source={require("../assets/biz2.avif")}
-          resizeMode="cover"
-          style={{ height: 300, width: Dimensions.get("screen").width }}
-        ></Image>
+      {data &&
+        <ScrollView style={{ backgroundColor: accentColor1, paddingBottom: 50 }}>
+          <Image
+            source={require("../assets/biz2.avif")}
+            resizeMode="cover"
+            style={{ height: 300, width: Dimensions.get("screen").width }}
+          ></Image>
 
-        <View style={{ paddingHorizontal: 15, paddingBottom: 20 }}>
-          <Text style={styles.title}>
-            3xWear Sneakers
-          </Text>
+          <View style={{ paddingHorizontal: 15, paddingBottom: 20 }}>
+            <Text style={styles.title}>
+              {data.name}
+            </Text>
 
-          <View style={styles.detailsContainer}>
-            <TouchableOpacity onLongPress={() => CopyToClipBoard("355 Mayor Road")} style={styles.bizDetails}>
-              <Ionicons name="location-outline" size={20} color={accentColor6} />
-              <Text style={styles.detailsText}>
-                355 Mayor Road
-              </Text>
+            <View style={styles.detailsContainer}>
+              <TouchableOpacity onLongPress={() => CopyToClipBoard("355 Mayor Road")} style={styles.bizDetails}>
+                <Ionicons name="location-outline" size={20} color={accentColor6} />
+                <Text style={styles.detailsText}>
+                  {data.location}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onLongPress={() => CopyToClipBoard("254113359777")} style={styles.bizDetails}>
+                <Ionicons name="call-outline" size={20} color={accentColor6} />
+                <Text style={styles.detailsText}>
+                  {data.contact}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onLongPress={() => OpenLink("https://expo.dev")} style={styles.bizDetails}>
+                <Ionicons name="ios-link" size={20} color={accentColor6} />
+                <Text style={styles.detailsText}>
+                  {data.website}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.descTitle}>Description</Text>
+            <Text style={styles.description} numberOfLines={readMore ? undefined : 2}>{data.description}</Text>
+            <TouchableOpacity onPress={() => setreadMore(!readMore)}>
+              <Text style={{ color: accentColor5, fontSize: 18 }}>{readMore ? "Show Less" : "Read more"}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onLongPress={() => CopyToClipBoard("254113359777")} style={styles.bizDetails}>
-              <Ionicons name="call-outline" size={20} color={accentColor6} />
-              <Text style={styles.detailsText}>
-                254113359777
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onLongPress={() => OpenLink("https://expo.dev")} style={styles.bizDetails}>
-              <Ionicons name="ios-link" size={20} color={accentColor6} />
-              <Text style={styles.detailsText}>
-                expo.dev
-              </Text>
+
+            <View style={styles.feedBackContainer}>
+              <TouchableOpacity style={styles.feedBackButton}>
+                <Ionicons
+                  name="heart-outline"
+                  size={30}
+                  color={textColor}
+                />
+                <Text style={{ color: textColor, fontSize: 18 }}>Like</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setVisible(true)} style={styles.feedBackButton}>
+                <Ionicons style={styles.eventLikeIcon} name="chatbubble-outline" size={24} color={textColor} />
+                <Text style={{ color: textColor, fontSize: 18 }}>Comment</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.buyButton} onPress={() => OpenLink("https://wa.me/254113359777")}>
+              <Text style={styles.buyButtonText}>Chat on WhatsApp</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.descTitle}>Description</Text>
-          <Text style={styles.description} numberOfLines={readMore ? undefined : 2}>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ut nihil
-            eaque nesciunt voluptates! Blanditiis placeat iure alias ipsam
-            eaque, numquam tempore nemo ullam ut ducimus sint nihil atque enim?
-            Facilis. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Amet aut non suscipit molestiae hic, et eveniet qui delectus! Quis neque non rem in doloremque veritatis aliquam blanditiis explicabo! Vitae, cum!
-          </Text>
-          <TouchableOpacity onPress={() => setreadMore(!readMore)}>
-            <Text style={{ color: accentColor5, fontSize: 18 }}>{readMore ? "Show Less" : "Read more"}</Text>
-          </TouchableOpacity>
-
-          <View style={styles.feedBackContainer}>
-            <TouchableOpacity style={styles.feedBackButton}>
-              <Ionicons
-                name="heart-outline"
-                size={30}
-                color={textColor}
-              />
-              <Text style={{ color: textColor, fontSize: 18 }}>Like</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setVisible(true)} style={styles.feedBackButton}>
-              <Ionicons style={styles.eventLikeIcon} name="chatbubble-outline" size={24} color={textColor} />
-              <Text style={{ color: textColor, fontSize: 18 }}>Comment</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.buyButton} onPress={() => OpenLink("https://wa.me/254113359777")}>
-            <Text style={styles.buyButtonText}>Chat on WhatsApp</Text>
-          </TouchableOpacity>
-        </View>
-
-      </ScrollView>
+        </ScrollView>
+      }
 
       <BottomSheet
         visible={visible}

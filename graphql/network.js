@@ -1,11 +1,9 @@
-import request, { gql, RequestDocument } from "graphql-request";
-import { API_URL } from "../constants";
-import { Alert } from "react-native/types";
-import { useNavigation } from "@react-navigation/native";
+import { API_URL, capitalize } from "../constants";
+import { Alert } from "react-native";
+import { request } from "../node_modules/graphql-request/build/esm/index";
+
 
 export async function makeRequest(query, body, withDefaultInput) {
-  const navigation = useNavigation()
-
   try {
     const data = await request(
       API_URL,
@@ -14,14 +12,14 @@ export async function makeRequest(query, body, withDefaultInput) {
     );
     return data;
   } catch (error) {
+    console.log("❌", error);
     const first_error = error.response?.errors[0];
     const errormsg = first_error?.message;
     if (errormsg == "invalid token") {
       Alert.alert("Please login to continue");
-      navigation.navigate("Login");
-      return null;
+      return undefined;
     }
-    Alert.alert(errormsg || "network error");
+    Alert.alert(capitalize(errormsg) || "Network error");
     return null;
   }
 }
