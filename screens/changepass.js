@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   ImageBackground,
@@ -16,7 +17,7 @@ import {
 import { Ionicons, AntDesign, EvilIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BlurView } from "expo-blur";
 import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
 import { useNavigation } from "@react-navigation/native";
@@ -24,6 +25,8 @@ import { dumCategories } from "./home";
 import { SelectList } from 'react-native-dropdown-select-list'
 import * as ImagePicker from 'expo-image-picker';
 import { Header } from "../components/header";
+import { GetStoredUserToken } from "../storage";
+import { CHANGE_PASSWORD } from "../graphql/mutations";
 
 
 
@@ -36,12 +39,32 @@ const data = [
   { key: 'NewZealand', value: 'NewZealand' },
 ]
 export default function ChangePassword() {
-
   const [oldPasswordVisible, setOldPasswordVisible] = useState(true);
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(true);
   const navigation = useNavigation()
+  const [input, setInput] = useState({
+    token: "",
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  })
 
+  useEffect(() => {
+    async function SetToken() {
+      const token = await GetStoredUserToken(navigation);
+      setInput({ ...input, token: token })
+    }
+    SetToken()
+  }, [])
+
+  async function ChangePassword() {
+    const response = await CHANGE_PASSWORD(input)
+    if (response?.ChangePassword) {
+      Alert.alert("Password changed successfully")
+      navigation.navigate("Account")
+    }
+  }
 
   return (
     <SafeAreaView style={{ backgroundColor: accentColor7, flex: 1 }}>
@@ -57,11 +80,12 @@ export default function ChangePassword() {
               <TextInput
                 placeholderTextColor={textColor2}
                 style={styles.detailsContainer}
+                onChangeText={(e) => setInput({ ...input, oldPassword: e })}
                 placeholder="Enter old password"
                 passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
-                secureTextEntry={confirmPasswordVisible}
+                secureTextEntry={oldPasswordVisible}
               />
-              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
+              <Ionicons name={oldPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor4} onPress={() => setOldPasswordVisible(!oldPasswordVisible)} />
             </View>
 
 
@@ -71,10 +95,11 @@ export default function ChangePassword() {
                 placeholderTextColor={textColor2}
                 style={[styles.detailsContainer]}
                 placeholder="Enter new password"
+                onChangeText={(e) => setInput({ ...input, newPassword: e })}
                 passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
                 secureTextEntry={passwordVisible}
               />
-              <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setPasswordVisible(!passwordVisible)} />
+              <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor4} onPress={() => setPasswordVisible(!passwordVisible)} />
             </View>
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Confirm New Password</Text>
@@ -83,14 +108,15 @@ export default function ChangePassword() {
               <TextInput
                 placeholderTextColor={textColor2}
                 style={styles.detailsContainer}
+                onChangeText={(e) => setInput({ ...input, confirmNewPassword: e })}
                 placeholder="Confirm new password"
                 passwordRules="required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
                 secureTextEntry={confirmPasswordVisible}
               />
-              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
+              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor4} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate("MainScreen", { screen: "Account" })} style={styles.createButton}>
+            <TouchableOpacity onPress={() => ChangePassword()} style={styles.createButton}>
               <Text style={styles.createButtonText}>Update</Text>
             </TouchableOpacity>
           </View>

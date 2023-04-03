@@ -4,6 +4,7 @@ import {
   ImageBackground,
   Linking,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -29,20 +30,26 @@ import { GetStoredUserToken } from "../storage";
 export default function LikedBusiness() {
   const navigation = useNavigation()
   const [data, setData] = useState()
+  const [loading, setloading] = useState(false)
+
 
 
 
   async function FetchLikedBusiness() {
+    setloading(true)
     const token = await GetStoredUserToken(navigation)
     const response = await FETCH_LIKED_BUSINESS(token)
+    console.log(response);
     if (response) {
       setData(response.FetchLikedBusiness)
     }
+    setloading(false)
   }
 
   useEffect(() => {
     FetchLikedBusiness();
   }, [])
+
 
   return (
     <LinearGradient
@@ -51,37 +58,51 @@ export default function LikedBusiness() {
       end={{ x: 0, y: 1 }}
       colors={[accentColor1, accentColor2]}
     >
-      <SafeAreaView style={{ marginHorizontal: 10 }}>
+      <SafeAreaView style={{ marginHorizontal: 10, flex: 1 }}>
         <Header />
         <Text style={{ fontSize: 35, color: textColor, padding: 10 }}>
           Liked Businesses
         </Text>
-        {data && data.length > 0 ?
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ marginBottom: 200 }}
-          >
-            {data.map((biz, i) =>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("BusinessDetails", { id: biz.id })}
-                key={i}
-                style={styles.eventInfo}>
-                <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
-                <View style={{ flexDirection: "column", padding: 10 }}>
-                  <Text style={styles.eventName}>
-                    {biz.name}
-                  </Text>
-                  <Text numberOfLines={2} style={styles.bizDescription}>
-                    {biz.description}
-                  </Text>
-                </View>
-                <EvilIcons style={{ marginLeft: "auto" }} name="chevron-right" size={24} color="white" />
-              </TouchableOpacity>
-            )}
-          </ScrollView>
-          :
-          <Text style={{ color: textColor, textAlign: "center", marginTop: 100 }}>No businesses liked</Text>
-        }
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              colors={[accentColor5]}
+              onRefresh={() => FetchLikedBusiness()}
+              tintColor={accentColor5}
+              title="Fetching data..."
+              titleColor={"white"}
+              children={
+                <Text style={{ color: accentColor5, textAlign: "center" }}>
+                  Pull Down to refresh
+                </Text>
+              }
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          style={{ marginBottom: 80 }}
+        >
+          {data && data.length > 0 ? data.map((biz, i) =>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("BusinessDetails", { id: biz.id })}
+              key={i}
+              style={styles.eventInfo}>
+              <Image source={require("../assets/IMG_4924.jpg")} style={{ height: 50, width: 50, }} />
+              <View style={{ flexDirection: "column", padding: 10 }}>
+                <Text style={styles.eventName}>
+                  {biz.name}
+                </Text>
+                <Text numberOfLines={2} style={styles.bizDescription}>
+                  {biz.description}
+                </Text>
+              </View>
+              <EvilIcons style={{ marginLeft: "auto" }} name="chevron-right" size={24} color="white" />
+            </TouchableOpacity>
+          ) :
+            <Text style={{ color: textColor, textAlign: "center", marginTop: 100 }}>No businesses liked</Text>
+          }
+        </ScrollView>
+
       </SafeAreaView>
     </LinearGradient>
   )
@@ -135,7 +156,7 @@ const styles = StyleSheet.create({
     color: textColor,
     fontSize: 20,
     fontWeight: "300",
-    textTransform:"capitalize",
+    textTransform: "capitalize",
   },
   bizDescription: {
     color: textColorAlt,

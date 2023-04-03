@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   ImageBackground,
@@ -24,11 +25,22 @@ import { dumCategories } from "./home";
 import { SelectList } from 'react-native-dropdown-select-list'
 import * as ImagePicker from 'expo-image-picker';
 import { Header } from "../components/header";
+import { VERIFY_USER } from "../graphql/mutations";
+import { GetStoredUserToken } from "../storage";
 
 
 export default function VerifyEmail() {
   const navigation = useNavigation()
+  const [otp, setOtp] = useState("")
 
+  async function VerifyUser() {
+    const token = await GetStoredUserToken(navigation)
+    const response = await VERIFY_USER(token, otp)
+    if (response?.VerifyUser) {
+      Alert.alert("User verified")
+      navigation.navigate("Account")
+    }
+  }
 
   return (
     <SafeAreaView style={{ backgroundColor: accentColor7, flex: 1 }}>
@@ -38,8 +50,8 @@ export default function VerifyEmail() {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ marginHorizontal: 10, marginTop: 15, paddingBottom: 20 }}>
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Enter OTP sent to email - mikey123@gmail.com</Text>
-            <TextInput placeholder="Enter otp" placeholderTextColor={textColor2} style={styles.detailsContainer} />
-            <TouchableOpacity onPress={() => navigation.navigate("MainScreen", { screen: "Account" })} style={styles.createButton}>
+            <TextInput onChangeText={(e) => setOtp(e)} placeholder="Enter otp" placeholderTextColor={textColor2} style={styles.detailsContainer} />
+            <TouchableOpacity onPress={() => VerifyUser()} style={styles.createButton}>
               <Text style={styles.createButtonText}>Verify</Text>
             </TouchableOpacity>
           </View>

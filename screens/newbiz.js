@@ -27,7 +27,7 @@ import { useNavigation } from "@react-navigation/native";
 import { UploadFile } from "../graphql/network";
 
 
-const typedata = BusinessTypes.map((t) => ({ key: t.toUpperCase(), value: capitalize(t.toLowerCase()) }))
+export const typedata = BusinessTypes.map((t) => ({ key: t.toUpperCase(), value: capitalize(t.toLowerCase()) }))
 
 export default function NewBusiness() {
   const navigation = useNavigation()
@@ -91,7 +91,7 @@ export default function NewBusiness() {
                 style={{ height: 300, width: Dimensions.get("screen").width }}
               >
               </Image>
-              <TouchableOpacity style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 15 }} onPress={() => setInput({ ...input, image: null })}>
+              <TouchableOpacity style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 15 }} onPress={() => setInput({ ...input, image: "" })}>
                 <EvilIcons name="trash" size={24} color={textColor3} />
                 <Text style={{ color: textColor3 }}>Remove image</Text>
               </TouchableOpacity>

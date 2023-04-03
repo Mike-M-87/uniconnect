@@ -59,6 +59,7 @@ export default function BusinessInfo() {
     } else {
       setliked(false)
     }
+    FetchBusiness(route.params?.id)
   }
 
 
@@ -85,6 +86,7 @@ export default function BusinessInfo() {
   useEffect(() => {
     const val = route.params?.id
     FetchBusiness(val)
+    FetchComments()
     CheckLikeState(val)
   }, [])
 
@@ -94,7 +96,7 @@ export default function BusinessInfo() {
       {data &&
         <ScrollView style={{ backgroundColor: accentColor1, paddingBottom: 50 }}>
           <Image
-            source={data.image ? { uri: data.image } : require("../assets/biz2.avif")}
+            source={require("../assets/IMG_4924.jpg")}
             resizeMode="cover"
             style={{ height: 300, width: Dimensions.get("screen").width }}
           ></Image>
@@ -105,19 +107,19 @@ export default function BusinessInfo() {
             </Text>
 
             <View style={styles.detailsContainer}>
-              <TouchableOpacity onLongPress={() => CopyToClipBoard("355 Mayor Road")} style={styles.bizDetails}>
+              <TouchableOpacity onLongPress={() => CopyToClipBoard(data.location)} style={styles.bizDetails}>
                 <Ionicons name="location-outline" size={20} color={accentColor6} />
                 <Text style={styles.detailsText}>
                   {data.location}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onLongPress={() => CopyToClipBoard("254113359777")} style={styles.bizDetails}>
+              <TouchableOpacity onLongPress={() => CopyToClipBoard(data.contact)} style={styles.bizDetails}>
                 <Ionicons name="call-outline" size={20} color={accentColor6} />
                 <Text style={styles.detailsText}>
                   {data.contact}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onLongPress={() => OpenLink("https://expo.dev")} style={styles.bizDetails}>
+              <TouchableOpacity onPress={() => data.website && OpenLink(data.website)} style={styles.bizDetails}>
                 <Ionicons name="ios-link" size={20} color={accentColor6} />
                 <Text style={styles.detailsText}>
                   {data.website}
@@ -138,14 +140,14 @@ export default function BusinessInfo() {
                   size={30}
                   color={liked ? "red" : textColor}
                 />
-                <Text style={{ color: liked ? "red" : textColor, fontSize: 18 }}>{liked ? "Liked" : "Like"}</Text>
+                <Text style={{ color: textColor, fontSize: 18 }}>{data.likes}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setVisible(true)} style={styles.feedBackButton}>
                 <Ionicons style={styles.eventLikeIcon} name="chatbubble-outline" size={24} color={textColor} />
-                <Text style={{ color: textColor, fontSize: 18 }}>Comment</Text>
+                <Text style={{ color: textColor, fontSize: 18 }}>Comments</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.buyButton} onPress={() => OpenLink("https://wa.me/254113359777")}>
+            <TouchableOpacity style={styles.buyButton} onPress={() => data.contact && OpenLink("https://wa.me/" + data.contact)}>
               <Text style={styles.buyButtonText}>Chat on WhatsApp</Text>
             </TouchableOpacity>
           </View>
@@ -165,16 +167,17 @@ export default function BusinessInfo() {
             <Text style={{ fontSize: 25, color: textColor }}>Comments</Text>
           </View>
 
+
           <ScrollView>
-            {Array(20).fill(null).map((_, i) => (
+            {comments && comments.map((com, i) => (
               <View key={i} style={{ borderBottomColor: accentColor3, borderBottomWidth: 0.2, padding: 10 }}>
                 <View style={{ flexDirection: "row", gap: 10 }}>
-                  <Image source={require("../assets/biz.jpeg")} style={{ height: 50, width: 50, borderRadius: 50, }} />
+                  <Image source={require("../assets/IMG_4925.jpg")} style={{ height: 50, width: 50, borderRadius: 50, }} />
                   <View style={{ flexDirection: "column", gap: 5 }}>
-                    <Text style={{ fontSize: 16, fontWeight: "bold", color: textColor }}>John Wafula</Text>
-                    <Text style={{ color: textColor, marginRight: 65 }}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ducimus, libero eligendi ex adipisci voluptatem quisquam enim hic vel rerum eaque praesentium iusto quod cupiditate rem earum neque, reiciendis commodi tempore!</Text>
+                    <Text style={{ fontSize: 16, fontWeight: "bold", color: textColor }}>{com.sender}</Text>
+                    <Text style={{ color: textColor, marginRight: 65 }}>{com.Message}</Text>
                   </View>
-                  <Text style={{ marginLeft: "auto", fontSize: 15, color: textColor2 }}>5 months ago</Text>
+                  <Text style={{ marginLeft: "auto", fontSize: 15, color: textColor2 }}>{new Date(com.date).toLocaleDateString()}</Text>
                 </View>
               </View>
             ))}
@@ -188,7 +191,7 @@ export default function BusinessInfo() {
               placeholderTextColor={textColor2}
               onChangeText={(e) => setcomment(e)}
             />
-            <TouchableOpacity onPress={() => WriteComment(b)}>
+            <TouchableOpacity onPress={() => WriteComment()}>
               <Ionicons name="md-send" size={30} color={accentColor4} />
             </TouchableOpacity>
           </View>

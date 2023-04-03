@@ -4,6 +4,7 @@ import {
   ImageBackground,
   Linking,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -29,14 +30,18 @@ import { FETCH_BUSINESSES_LIST } from "../graphql/queries";
 export default function LikedBusiness() {
   const navigation = useNavigation()
   const [data, setData] = useState()
+  const [loading, setLoading] = useState(false)
+
 
 
   async function FetchMyBusiness() {
+    setLoading(true)
     const token = await GetStoredUserToken(navigation)
     const response = await FETCH_BUSINESSES_LIST({ token: token, mine: true })
     if (response) {
       setData(response.FetchBusinessList)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -50,14 +55,14 @@ export default function LikedBusiness() {
       end={{ x: 0, y: 1 }}
       colors={[accentColor1, accentColor2]}
     >
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <Header />
         <Text style={{ fontSize: 25, fontWeight: "bold", color: textColor, marginLeft: 20 }}>
           Your Shops
         </Text>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginHorizontal: 10 }}>
           <Text style={{ fontSize: 20, color: textColor, padding: 10 }}>
-            5 Businesses
+            {data?.length} Businesses
           </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate("NewBusiness")}
@@ -70,34 +75,48 @@ export default function LikedBusiness() {
           </TouchableOpacity>
         </View>
 
-        {data && data?.length > 0 ?
-          <ScrollView
-            indicatorStyle="white"
-            style={{ marginBottom: 210, paddingTop: 20 }}
-          >
-            {data.map((biz, i) =>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("EditBusiness")}
-                key={i}
-                style={styles.eventInfo}>
-                <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
-                <View style={{ flexDirection: "column", padding: 10 }}>
-                  <Text style={styles.eventName}>
-                    {biz.name}
-                  </Text>
-                  <Text numberOfLines={2} style={styles.bizDescription}>
-                    {biz.description}
-                  </Text>
-                </View>
-                <MaterialCommunityIcons style={{ marginLeft: "auto", marginHorizontal: 10}} name="store-edit" size={24} color={textColorAlt} />
-                <Text style={{ color: textColor }} >Edit</Text>
-              </TouchableOpacity>
-            )}
-          </ScrollView> :
-          <TouchableOpacity style={styles.createButton} onPress={() => navigation.navigate("EditBusiness")}>
-            <Text style={styles.createButtonText}>Add your Business</Text>
-          </TouchableOpacity>
-        }
+        <ScrollView
+          indicatorStyle="white"
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              colors={[accentColor5]}
+              onRefresh={() => FetchMyBusiness()}
+              tintColor={accentColor5}
+              title="Fetching data..."
+              titleColor={"white"}
+              children={
+                <Text style={{ color: accentColor5, textAlign: "center" }}>
+                  Pull Down to refresh
+                </Text>
+              }
+            />
+          }
+          style={{ marginBottom: 80, paddingTop: 20 }}
+        >
+          {data && data?.length > 0 ? data.map((biz, i) =>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("EditBusiness", { id: biz.id })}
+              key={i}
+              style={styles.eventInfo}>
+              <Image source={require("../assets/IMG_4924.jpg")} style={{ height: 50, width: 50, }} />
+              <View style={{ flexDirection: "column", padding: 10 }}>
+                <Text style={styles.eventName}>
+                  {biz.name}
+                </Text>
+                <Text numberOfLines={2} style={styles.bizDescription}>
+                  {biz.description}
+                </Text>
+              </View>
+              <MaterialCommunityIcons style={{ marginLeft: "auto", marginHorizontal: 10 }} name="store-edit" size={24} color={textColorAlt} />
+              <Text style={{ color: textColor }} >Edit</Text>
+            </TouchableOpacity>
+          ) :
+            <TouchableOpacity style={styles.createButton} onPress={() => navigation.navigate("NewBusiness")}>
+              <Text style={styles.createButtonText}>Add your Business</Text>
+            </TouchableOpacity>
+          }
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   )
@@ -150,7 +169,7 @@ const styles = StyleSheet.create({
   },
   eventName: {
     color: textColor,
-    textTransform:"capitalize",
+    textTransform: "capitalize",
     fontSize: 20,
     fontWeight: "300",
   },

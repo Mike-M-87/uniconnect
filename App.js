@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text } from "react-native";
 
 import Home from "./screens/home";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons,Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -21,6 +21,7 @@ import Signup from "./screens/signup";
 import Root from "./screens/root";
 import ChangePassword from "./screens/changepass";
 import VerifyEmail from "./screens/verifyemail";
+import SupportPage from "./screens/support";
 
 
 const Tab = createBottomTabNavigator();
@@ -35,12 +36,12 @@ export default function App() {
             headerShown: false, headerStyle: { backgroundColor: accentColor7, },
             headerTitleStyle: { color: textColor2 }
           }}
-          initialRouteName="MainScreen">
+          initialRouteName="Root">
           <Stack.Screen options={{ headerShown: true }} name="Login" component={Login} />
           <Stack.Screen options={{ headerShown: true }} name="Signup" component={Signup} />
           <Stack.Screen options={{ headerShown: true }} name="Change Password" component={ChangePassword} />
           <Stack.Screen options={{ headerShown: true }} name="Verify Email" component={VerifyEmail} />
-
+          <Stack.Screen options={{ headerShown: true }} name="Support" component={SupportPage} />
           <Stack.Screen name="Root" component={Root} />
           <Stack.Screen name="MainScreen" component={MainScreen} />
           <Stack.Screen name="BusinessList" component={BusinessList} />
@@ -88,12 +89,7 @@ function MainScreen() {
         name="MyBusinessList"
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name={
-                focused
-                  ? "business"
-                  : "business-outline"
-              }
+            <Entypo name="shop"
               size={focused ? 35 : 30}
               style={focused && styles.tabIconShadow}
               color={focused ? "white" : accentColor4}

@@ -92,6 +92,7 @@ export interface FetchBusinessList {
   website: string
   contact: string
   image: string
+  likes: String
   ownerName: string
 }
 
@@ -113,6 +114,14 @@ export interface LikeBusinessResponse {
   LikeBusiness: boolean
 }
 
+export interface EditBusinessResponse {
+  EditBusiness: boolean
+}
+
+export interface DeleteBusinessResponse {
+  DeleteBusiness: boolean
+}
+
 export interface CheckLikedResponse {
   CheckIFLiked: boolean
 }
@@ -121,38 +130,34 @@ export interface PostCommentResponse {
   PostComment: boolean
 }
 
+export interface ChangePasswordResponse {
+  ChangePassword: boolean
+}
+
+export interface VerifyUserResponse {
+  VerifyUser: boolean
+}
+
 export interface PostCommentInput {
-  token:string
-  bizId:string
-  message:string
+  token: string
+  bizId: string
+  message: string
 }
 
 export interface FetchLikedBusinessResponse {
-  FetchLikedBusiness: FetchLikedBusiness[]
-}
-
-export interface FetchLikedBusiness {
-  id: string
-  name: string
-  type: string
-  description: string
-  location: string
-  website: string
-  contact: string
-  image: string
-  ownerName: string
-}
-
-export interface FilestackResponse {
-  url: string
-  size: number
-  type: string
-  filename: string
-  key: string
+  FetchLikedBusiness: FetchBusinessList[]
 }
 
 export interface FetchCommentResponse {
   FetchComments: FetchComment[]
+}
+
+
+export interface ChangePasswordInput {
+  token: String
+  oldPassword: String
+  newPassword: String
+  confirmNewPassword: String
 }
 
 export interface FetchComment {

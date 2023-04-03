@@ -28,6 +28,7 @@ export async function FETCH_BUSINESSES_LIST(body: FetchBusinessListInput) {
       type
       description
       location
+      likes
       website
       contact
       image
@@ -49,6 +50,7 @@ export async function FETCH_BUSINESSES_DETAILS(authToken: string, businessId: st
       description
       location
       website
+      likes
       contact
       image
       ownerName
@@ -68,6 +70,7 @@ export async function FETCH_LIKED_BUSINESS(authToken: string) {
       type
       description
       location
+      likes
       website
       contact
       image

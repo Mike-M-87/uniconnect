@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
-  accentColor3, accentColor5,
+  accentColor3, accentColor4, accentColor5,
   accentColor7, accentColor8, textColor, textColor2, textColor3
 } from "../styles/main";
 import { useNavigation } from "@react-navigation/native";
@@ -78,7 +78,7 @@ export default function Signup() {
                 secureTextEntry={passwordVisible}
                 onChangeText={(e) => setCreds({ ...creds, password: e })}
               />
-              <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setPasswordVisible(!passwordVisible)} />
+              <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor4} onPress={() => setPasswordVisible(!passwordVisible)} />
             </View>
 
             <Text style={{ color: textColor3, marginBottom: 10, marginTop: 20 }}>Confirm Password</Text>
@@ -91,7 +91,7 @@ export default function Signup() {
                 secureTextEntry={confirmPasswordVisible}
                 onChangeText={(e) => setCreds({ ...creds, confirmpassword: e })}
               />
-              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor3} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
+              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={accentColor4} onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)} />
             </View>
 
             <TouchableOpacity onPress={() => RegisterUser()} style={styles.createButton}>

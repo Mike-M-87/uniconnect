@@ -4,6 +4,7 @@ import {
   ImageBackground,
   Linking,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -17,7 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { HapticButton } from "../components/haptic";
 import { useEffect, useState } from "react";
 import { BlurView } from "expo-blur";
-import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, textColor, textColorAlt } from "../styles/main";
+import { accentColor1, accentColor2, accentColor3, accentColor4, accentColor5, accentColor6, accentColor7, accentColor8, textColor, textColor2, textColor3, textColorAlt } from "../styles/main";
 import { OpenChat, OpenLink, capitalize } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/header";
@@ -33,14 +34,17 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("")
   const [data, setData] = useState()
   const [likes, setLikes] = useState()
+  const [loading, setLoading] = useState(false)
 
 
   async function FetchCategoryBusiness() {
+    setLoading(true)
     const token = await GetStoredUserToken(navigation)
     const response = await FETCH_BUSINESSES_LIST({ token: token, type: category })
     if (response.FetchBusinessList) {
       setData(response.FetchBusinessList)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -82,7 +86,23 @@ export default function Home() {
       colors={[accentColor1, accentColor2]}
     >
       <SafeAreaView>
-        <ScrollView style={{ paddingBottom: 100 }}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              colors={[accentColor5]}
+              onRefresh={() => FetchCategoryBusiness()}
+              tintColor={accentColor5}
+              title="Fetching data..."
+              titleColor={"white"}
+              children={
+                <Text style={{ color: accentColor5, textAlign: "center" }}>
+                  Pull Down to refresh
+                </Text>
+              }
+            />
+          }
+          style={{ paddingBottom: 100 }}>
           <Header />
           <View style={styles.searchContainer}>
             <Ionicons name="search" size={24} color={accentColor4} />
@@ -146,7 +166,7 @@ export default function Home() {
                     style={styles.eventImage}
                     borderRadius={25}
                     resizeMode="cover"
-                    source={require("../assets/biz2.avif")}
+                    source={require("../assets/IMG_4924.jpg")}
                   >
                     <View style={styles.eventInfoContainer}>
                       <BlurView
@@ -251,13 +271,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   eventName: {
-    color: "white",
-    textTransform:"capitalize",
+    color: accentColor3,
+    textTransform: "capitalize",
     fontSize: 20,
     fontWeight: "600",
   },
   bizNumber: {
-    color: "white",
+    color: accentColor3,
     fontSize: 17,
     marginTop: 5,
     fontWeight: "600",

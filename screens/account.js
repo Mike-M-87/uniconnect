@@ -31,7 +31,6 @@ import { FetchUserResponse } from "../types/types";
 
 export default function Account() {
   const [image, setImage] = useState();
-  const [editName, seteditName] = useState(false)
   const navigation = useNavigation()
   const [hasBiometric, sethasBiometric] = useState(false)
   const [bioSwitch, setBioSwitch] = useState(false)
@@ -54,28 +53,28 @@ export default function Account() {
     }
   }
 
+  async function GetUserData() {
+    const token = await GetStoredUserToken(navigation)
+    if (token) {
+      const response = await FETCH_USER_DATA(token)
+      console.log(response);
+      if (response == undefined) {
+        navigation.navigate("Login")
+      } else if (response.fetchUserData) {
+        setData(response.fetchUserData)
+      }
+    }
+  }
+
+  async function CheckBiometric() {
+    try {
+      sethasBiometric(await LocalAuthentication.hasHardwareAsync() && await LocalAuthentication.isEnrolledAsync())
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    async function CheckBiometric() {
-      try {
-        sethasBiometric(await LocalAuthentication.hasHardwareAsync() && await LocalAuthentication.isEnrolledAsync())
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    async function GetUserData() {
-      const token = await GetStoredUserToken(navigation)
-      if (token) {
-        const response = await FETCH_USER_DATA(token)
-        if (response == undefined) {
-          navigation.navigate("Login")
-        } else if (response.fetchUserData) {
-          setData(response.fetchUserData)
-        }
-      }
-    }
-
     GetUserData()
     // CheckBiometric()
   }, [])
@@ -111,7 +110,7 @@ export default function Account() {
           {data && <>
             <View style={{ padding: 10 }}>
               <View style={{ flexDirection: "column", gap: 20, alignItems: "center", marginBottom: 20 }}>
-                <Image source={{ uri: image }} style={{ height: 100, width: 100, borderRadius: 50, borderColor: accentColor3, borderWidth: 0.2 }} />
+                <Image source={image ? { uri: image } : require("../assets/IMG_4925.jpg")} style={{ height: 100, width: 100, borderRadius: 50, borderColor: accentColor3, borderWidth: 0.2 }} />
                 <TouchableOpacity onPress={() => PickImage()} style={{ backgroundColor: accentColor5, paddingVertical: 5, paddingHorizontal: 10, borderRadius: 25 }}>
                   <Text style={{ color: textColor, fontSize: 18 }}>
                     Change Profile Picture
@@ -131,24 +130,9 @@ export default function Account() {
               <View style={styles.detailsContainer}>
                 <View style={{ flexDirection: "column" }}>
                   <Text style={{ color: textColor2 }}>Username</Text>
-                  <TextInput numberOfLines={1} ref={userNameRef} editable={editName} style={styles.details}>@{data.username}</TextInput>
+                  <Text numberOfLines={1} style={styles.details}>@{data.username}</Text>
                 </View>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    if (editName) {
-                      seteditName(false)
-                      Alert.alert("Saved username")
-                    }
-                    seteditName(true);
-                    userNameRef.current.focus()
-                  }
-                  }
-                  style={{ backgroundColor: accentColor5, padding: 5, borderRadius: 5 }}>
-                  {editName ? <Ionicons name="md-checkmark-circle" size={20} color={textColor} /> : <AntDesign name="edit" size={17} color={textColor} />}
-                </TouchableOpacity>
               </View>
-
 
               <View style={styles.detailsContainer}>
                 <View>
@@ -199,7 +183,7 @@ export default function Account() {
           <Text style={{ fontSize: 20, fontWeight: "bold", color: textColor, marginVertical: 20, marginLeft: 10 }}>Support</Text>
 
           <View style={{ backgroundColor: accentColor2, padding: 20, margin: 10, borderRadius: 10, marginBottom: 120 }}>
-            <TouchableOpacity style={styles.accountOption}>
+            <TouchableOpacity style={styles.accountOption} onPress={() => navigation.navigate("Support")}>
               <View style={{ flexDirection: "column" }}>
                 <Text style={{ color: textColor2, fontSize: 18 }}>
                   Info
@@ -208,7 +192,7 @@ export default function Account() {
                   Help and Support
                 </Text>
               </View>
-              <EvilIcons style={{marginLeft:"auto"}}  name="chevron-right" size={24} color={textColor3} />
+              <EvilIcons style={{ marginLeft: "auto" }} name="chevron-right" size={24} color={textColor3} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {

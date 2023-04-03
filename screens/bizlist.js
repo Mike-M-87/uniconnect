@@ -4,6 +4,7 @@ import {
   ImageBackground,
   Linking,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -31,6 +32,7 @@ export default function BusinessList() {
   const [searchTerm, setSearchTerm] = useState("")
   const searchRef = useRef()
   const [data, setData] = useState()
+  const [loading, setloading] = useState(false)
 
   useEffect(() => {
     const val = route.params?.search
@@ -45,11 +47,13 @@ export default function BusinessList() {
   }, [searchTerm])
 
   async function FetchCategoryBusiness() {
+    setloading(true)
     const token = await GetStoredUserToken(navigation)
     const response = await FETCH_BUSINESSES_LIST({ token: token, searchTerm: searchTerm ? searchTerm : null })
     if (response) {
       setData(response.FetchBusinessList)
     }
+    setloading(false)
   }
 
   return (
@@ -66,31 +70,45 @@ export default function BusinessList() {
         />
       </View>
 
-      {(data && data?.length > 0) ?
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{ marginBottom: 0 }}>
-          {data.map((biz, i) =>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("BusinessDetails", { id: biz.id })}
-              key={i}
-              style={styles.eventInfo}
-            >
-              <Image source={require("../assets/biz2.avif")} style={{ height: 50, width: 50, }} />
-              <View style={{ flexDirection: "column", padding: 10 }}>
-                <Text style={styles.eventName}>
-                  {biz.name}
-                </Text>
-                <Text numberOfLines={2} style={styles.bizDescription}>
-                  {biz.description}
-                </Text>
-              </View>
-              <EvilIcons style={{ marginLeft: "auto" }} name="chevron-right" size={24} color="white" />
-            </TouchableOpacity>
-          )}
-        </ScrollView>
-        : <Text style={{ color: textColor, textAlign: "center", marginTop: 100 }}>No businesses found</Text>
-      }
+
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            colors={[accentColor5]}
+            onRefresh={() => FetchCategoryBusiness()}
+            tintColor={accentColor5}
+            title="Fetching data..."
+            titleColor={"white"}
+            children={
+              <Text style={{ color: accentColor5, textAlign: "center" }}>
+                Pull Down to refresh
+              </Text>
+            }
+          />
+        }
+        showsVerticalScrollIndicator={false}
+        style={{ marginBottom: 0 }}>
+        {(data && data?.length > 0) ? data.map((biz, i) =>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("BusinessDetails", { id: biz.id })}
+            key={i}
+            style={styles.eventInfo}
+          >
+            <Image source={require("../assets/IMG_4924.jpg")} style={{ height: 50, width: 50, }} />
+            <View style={{ flexDirection: "column", padding: 10 }}>
+              <Text style={styles.eventName}>
+                {biz.name}
+              </Text>
+              <Text numberOfLines={2} style={styles.bizDescription}>
+                {biz.description}
+              </Text>
+            </View>
+            <EvilIcons style={{ marginLeft: "auto" }} name="chevron-right" size={24} color="white" />
+          </TouchableOpacity>
+        ) : <Text style={{ color: textColor, textAlign: "center", marginTop: 100 }}>No businesses found</Text>}
+      </ScrollView>
+
     </SafeAreaView >
   )
 }
