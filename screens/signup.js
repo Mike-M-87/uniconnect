@@ -54,7 +54,7 @@ export default function Signup() {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 30 }}>
-            <Image source={require("../assets/uniconnect-logo.png")} style={{ height: 200, width: 200 }} />
+            <Image source={require("../assets/uniconnect-logo.png")} resizeMode="center" style={{ height: 150 }} />
           </View>
 
           <View style={{ marginHorizontal: 10, marginTop: 15, paddingBottom: 20 }}>

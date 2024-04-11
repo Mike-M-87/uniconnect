@@ -1,7 +1,8 @@
 import { Alert, Linking } from "react-native";
 import * as Clipboard from 'expo-clipboard';
 
-export const API_URL = "http://172.20.10.3:8081/query";
+const myIp=""
+export const API_URL = `http://${myIp}:9091/query`
 
 export const AUTHTOKEN = "token"
 

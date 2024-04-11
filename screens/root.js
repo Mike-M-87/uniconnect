@@ -36,11 +36,11 @@ export default function Root() {
       <View style={{ flexDirection: "row", justifyContent: "center", }}>
         <Image
           source={require("../assets/logo-color.png")} resizeMode="cover"
-          style={{ height: Dimensions.get("window").height - 300, width: Dimensions.get("window").width, borderBottomRightRadius: 150 }} />
+          style={{ height: Dimensions.get("window").height - 350, width: Dimensions.get("window").width, borderBottomRightRadius: 150 }} />
       </View>
 
       <SafeAreaView style={{ marginHorizontal: 20 }}>
-        <Text style={{ fontSize: 25, color: textColor3, textAlign: "center", marginTop: 40 }}>
+        <Text style={{ fontSize: 25, color: textColor3, textAlign: "center", marginTop: 70 }}>
           Are you a Student looking to expand Your Business Reach?
         </Text>
         <TouchableOpacity onPress={()=>navigation.navigate("Signup")} style={styles.createButton}>
